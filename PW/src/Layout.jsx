@@ -9,8 +9,19 @@ const Layout = () => {
             <div id="contenedor">
                 <header id="main-header">
                     <img src="/images/download.png" width="150" height="60" />
-                    <h2>Carrera de Ingenieria de Sistemas <em>- Programacion Web</em></h2>
-                    <hr />
+
+                    {/*<h2>Carrera de Ingenieria de Sistemas <em>- Programacion Web</em></h2> */}
+                    <form className="search-form">
+                        <input 
+                            type="search" 
+                            placeholder="Buscar..." 
+                            aria-label="Buscar"
+                        />
+                        <button type="submit" className="search-button">
+                            🔍
+                        </button>
+                    </form>
+
                     <nav>
                         <ul>
                             <li><Link to="/">Inicio</Link></li>
