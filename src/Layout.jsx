@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import './index.css';
 import SearchBar from './SearchBar';
+
 const Layout = () => {
 
     const items = ['Articulo 1', 'Articulo 2', 'Articulo 3', 'Articulo 4'];
@@ -13,6 +14,20 @@ const Layout = () => {
                         <img src="./images/logoTech.jpeg" width="150" height="60" />
                         {/* Barra de Búsqueda */}
                         <SearchBar data={items} />
+                        
+                          {/* Carrito de Compras */}
+                           <Link to="/cart">
+                            <button style={{
+                                backgroundColor: '#ff4d4f',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '5px',
+                                padding: '10px',
+                                cursor: 'pointer'
+                            }}>
+                                🛒 Carrito
+                             </button>  
+                            </Link>
                     <hr />
                     <nav>
                         <ul>
