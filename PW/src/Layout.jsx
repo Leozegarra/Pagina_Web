@@ -1,5 +1,6 @@
 import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 import SearchBar from './SearchBar';
 const Layout = () => {
@@ -10,10 +11,9 @@ const Layout = () => {
         <>
             <div id="contenedor">
                 <header id="main-header">
-                        <img src="./images/logoTech.jpeg" width="150" height="60" />
-                        {/* Barra de Búsqueda */}
-                        <SearchBar data={items} />
-                    <hr />
+                    <img src="./images/logoTech.jpeg" width="150" height="60" />
+                    {/* Barra de Búsqueda */}
+                    <SearchBar data={items} />
                     <nav>
                         <ul>
                             <li><Link to="/">Inicio</Link></li>

@@ -1,44 +1,79 @@
-/* */
-
 body {
-  font-family: Verdana, sans-serif;
+  font-family: 'Poppins', sans-serif;
   height: 100%;
   margin-bottom: 10px;
   background-color: rgba(26,32,46,255);
+  color: white;
 }
 
 header {
   font-size: 25px;
   font-weight: 800;
-  font-family: sans-serif;
   width: 100%;
+  padding: 10px 20px;
+  background-color: rgba(26,32,46,255);
+  box-sizing: border-box;
 }
 
-pilin{  
-  background-color: red;
+.carousel-item img {
+  width: 100%;
+  height: auto;
+  object-fit: contain; /* o puedes omitirlo */
 }
 
-h1 {
-  color: green;
-  text-transform: uppercase;
-  border-bottom: 1px solid red;
-  text-shadow: .2em .2em silver;
+
+img {
+  float: left;
+  margin: 0 12px 0 0;
+  height: 60px;
+  width: 150px;
 }
 
-p {
-  font-size: small;
-  font-family: sans-serif;
-  margin-left: 50px;
+/* Barra de navegación */
+nav {
+  width: 100%;
+  background-color: #2c2f4a; /* color de fondo de la franja */
+  margin-top: 10px;
 }
 
-header>h2 {
-  text-shadow: .2em .2em silver;
+nav ul {
+  display: flex;
+  justify-content: space-around;
+  list-style: none;
+  padding: 10px 0;
+  margin: 0;
 }
+
+nav li {
+  padding: 10px 15px;
+  text-align: center;
+  background-color: transparent;
+  border: none;
+}
+
+nav a {
+  text-decoration: none;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+nav li:hover {
+  background-color: white;
+}
+
+nav li:hover a {
+  color: black;
+}
+
+/* Resto del CSS (footer, etc) */
 
 footer > p {
   font-size: smaller;
   color: white;
-  align-content: center;
+  text-align: center;
+  margin: 0;
 }
 
 footer {
@@ -49,42 +84,7 @@ footer {
   background-color: black;
   color: white;
   text-align: center;
-}
-
-/*
-footer {
-  position: relative;
-  width: 100%;
-  background-color: black;
-  margin-top: -100px;
-  clear: both;
-
-}
-*/
-img {
-  float: left;
-  margin: 0 12px;
-}
-
-nav a {
-  text-decoration: none;
-  color: inherit;
-  font-size: 14px;
-}
-
-nav li {
-  display: inline-block;
-  width: 10%;
-  padding: 5px 10px;
-  background-color: #000;
-  border: 1px solid #000;
-  text-align: center;
-  color: #fff;
-}
-
-nav li:hover {
-  background-color: #fff;
-  color: #000;
+  padding: 10px 0;
 }
 
 svg {
