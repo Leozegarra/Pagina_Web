@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import SideBar from '../../components/SideBar/SideBar';
-import DashboardHeader from '../../components/DashboardHeader/DashboardHeader';
+import DashboardHeader from '../../components/DashboardHeader/DashBoardHeader';
 import OrderTable from './components/OrderTable';
 
-const orders = [
+const initialOrders = [
   {
     id: 1001,
     cliente: "Juan Pérez",
@@ -46,14 +46,34 @@ const orders = [
   }
 ];
 
+const STORAGE_KEY = 'orders_data';
+
 export default function ListOrders() {
+  const [orders, setOrders] = useState(() => {
+    try {
+      const savedOrders = localStorage.getItem(STORAGE_KEY);
+      return savedOrders ? JSON.parse(savedOrders) : initialOrders;
+    } catch (error) {
+      console.error('Error al cargar las órdenes:', error);
+      return initialOrders;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+    } catch (error) {
+      console.error('Error al guardar las órdenes en localStorage:', error);
+    }
+  }, [orders]);
+
   return (
     <div className="flex">
       <SideBar />
       <div className="flex-1 flex flex-col">
         <DashboardHeader title={"Lista de Órdenes"}/>
         <div className="p-4">
-          <OrderTable orders={orders}/>
+          <OrderTable orders={orders} setOrders={setOrders}/>
         </div>
       </div>
     </div>
