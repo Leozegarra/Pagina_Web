@@ -23,12 +23,12 @@ const DetailUser = () => {
       setUser(currentUser);
 
       const orders = JSON.parse(localStorage.getItem('orders_data'));
-      console.log(orders)
-      console.log(currentUser)
+      console.log("orders",orders)
+      console.log("currentUser",currentUser)
       const filteredOrders = orders
-        .filter(order => console.log(order.email))
+        .filter(order => order.email === currentUser.email)
         .slice(0, 10);
-      console.log(filteredOrders)
+      console.log("filteredOrders",filteredOrders)
       setUserOrders(filteredOrders);
     } catch (error) {
       console.error('Error al cargar los datos:', error);
