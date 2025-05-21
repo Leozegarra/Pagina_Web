@@ -7,6 +7,7 @@ import Home from './pages/Home/Home';
 import Cart from './pages/Cart/Cart';
 import Checkout from './pages/Checkout/Checkout';
 import OrderComplete from './pages/OrderComplete/OrderComplete';
+import Categorias from './pages/Categorias/Categorias';
 
 function App() {
   return (
@@ -17,6 +18,8 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-complete" element={<OrderComplete />} />
+          <Route path="/Categorias" element={<Categorias />} />
+          
         </Routes>
       </Layout>
     </CartProvider>

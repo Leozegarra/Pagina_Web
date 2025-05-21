@@ -14,10 +14,13 @@ const Layout = ({ children }) => {
           </button>
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
-              <li className="nav-item">
+              <li className="nav-item col-md-4">
                 <Link className="nav-link" to="/">Inicio</Link>
               </li>
-              <li className="nav-item">
+              <li className="nav-item col-md-4">
+                <Link className="nav-link" to="/Categorias">Categorias</Link>
+              </li>
+              <li className="nav-item col-md-4">
                 <Link className="nav-link" to="/cart">
                   Carrito ({cart.length})
                 </Link>
