@@ -9,6 +9,8 @@ import Checkout from "./pages/Checkout/Checkout";
 import OrderComplete from "./pages/OrderComplete/OrderComplete";
 import ListUsers from "./pages/ListUsers/ListUsers";
 import ListOrders from "./pages/ListOrders/ListOrders";
+import DetailUser from "./pages/DetailUser/DetailUser";
+import DetailOrder from "./pages/DetailOrder/DetailOrder";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
       <Routes>
         <Route path="/admin/listUsers" element={<ListUsers />} />
         <Route path="/admin/listOrders" element={<ListOrders />} />
+        <Route path="/admin/users/:id" element={<DetailUser />} />
+        <Route path="/admin/orders/:id" element={<DetailOrder />} />
         <Route
           path="*"
           element={
