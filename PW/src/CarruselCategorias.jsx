@@ -1,0 +1,43 @@
+import React from "react";
+import Slider from "react-slick";
+import { useCategorias } from "./CategoriaContexto";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
+export default function CarruselCategorias() {
+  const { categorias } = useCategorias();
+
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    arrows: true,
+  };
+
+  return (
+  <Slider {...settings}>
+    {categorias.map((cat, idx) => (
+      <div
+        key={idx}
+        style={{
+          padding: "10px",
+          textAlign: "center",
+          cursor: "pointer",
+        }}
+      >
+        <div className="categoria-circulo">
+          <img
+            src={cat.imagen}
+            alt={cat.nombre}
+            className="img-categoria"
+          />
+        </div>
+        <h3 className="categoria-titulo">{cat.nombre}</h3>
+      </div>
+    ))}
+  </Slider>
+ );
+
+}

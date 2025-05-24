@@ -11,7 +11,7 @@ const Layout = () => {
         <>
             <div id="contenedor">
                 <header id="main-header">
-                    <img src="./images/logoTech.jpeg" width="150" height="60" />
+                    <img src="./images/logoTech.jpeg" className="logo-header" width="150" height="60" />
                     {/* Barra de Búsqueda */}
                     <SearchBar data={items} />
                     <nav>
@@ -19,7 +19,8 @@ const Layout = () => {
                             <li><Link to="/">Inicio</Link></li>
                             <li><Link to="/categorias">Categorias</Link></li>
                             <li><Link to="/productos">Productos</Link></li>
-                            <li><Link to="/productos">Nosotros</Link></li>
+                            <li><Link to="/contacto">Contacto</Link></li>
+                            <li><Link to="/login">Iniciar Sesion</Link></li>
                         </ul>
                     </nav>
 
