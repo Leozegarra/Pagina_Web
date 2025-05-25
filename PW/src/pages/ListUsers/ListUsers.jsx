@@ -2,53 +2,11 @@ import React, { useEffect, useState } from "react";
 import UserTable from "./components/TableUser";
 import Header from "../../components/DashboardHeader/DashBoardHeader";
 import Sidebar from "../../components/SideBar/SideBar";
-
-const initialUsers = [
-  {
-    id: 1,
-    name: "Juan Pérez",
-    email: "juanperez@example.com",
-    role: "Admin",
-    status: "Activo",
-    avatar: "https://images.unsplash.com/photo-1747285726356-535557675eda?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-  },
-  {
-    id: 2,
-    name: "María Gómez",
-    email: "maria.gomez@example.com",
-    role: "Usuario",
-    status: "Activo",
-    avatar: "https://images.unsplash.com/photo-1747285726356-535557675eda?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-  },
-  {
-    id: 3,
-    name: "Carlos Ruiz",
-    email: "carlosruiz@example.com",
-    role: "Usuario",
-    status: "Inactivo",
-    avatar: "https://images.unsplash.com/photo-1747285726356-535557675eda?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-  },
-  {
-    id: 4,
-    name: "Ana Torres",
-    email: "ana.torres@example.com",
-    role: "Usuario",
-    status: "Activo",
-    avatar: "https://images.unsplash.com/photo-1747285726356-535557675eda?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-  }
-];
-
-const STORAGE_KEY = 'users_data';
+import { localStorageService, STORAGE_KEYS } from "../../services/localStorage";
 
 const ListUsers = () => {
   const [users, setUsers] = useState(() => {
-    try {
-      const savedUsers = localStorage.getItem(STORAGE_KEY);
-      return savedUsers ? JSON.parse(savedUsers) : initialUsers;
-    } catch (error) {
-      console.error('Error al cargar los usuarios:', error);
-      return initialUsers;
-    }
+    return localStorageService.getData(STORAGE_KEYS.USERS);
   });
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -63,11 +21,7 @@ const ListUsers = () => {
   });
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-    } catch (error) {
-      console.error('Error guardando usuarios en localStorage:', error);
-    }
+    localStorageService.saveData(STORAGE_KEYS.USERS, users);
   }, [users]);
 
   return (
@@ -85,7 +39,6 @@ const ListUsers = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full px-4 py-2 pl-10 text-gray-700 bg-white border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             />
-           
           </div>
           {searchTerm && (
             <p className="mt-2 text-sm text-gray-500">
