@@ -1,6 +1,5 @@
 import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
-import { Link } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../index.css';
 import { useCart } from '../../contexts/CartContext'
@@ -19,7 +18,7 @@ const Layout = () => {
                             <img src="./images/logoTech.jpeg" className="logo-header" width="150" height="60" />
                         </Link>
                         {/* Barra de Búsqueda */}
-                        <SearchBar data={items} />
+                        <SearchBar/>
                     </div>
 
                     <nav>

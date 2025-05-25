@@ -24,8 +24,8 @@ function App() {
   return (
     <CartProvider>
       <CategoriaProvider>
-        <Router>
-          <Routes>
+        <Routes>
+          {/* Rutas Admin */}
           <Route path="/admin/listUsers" element={<ListUsers />} />
           <Route path="/admin/listOrders" element={<ListOrders />} />
           <Route path="/admin/listProducts" element={<ListProducts />} />
@@ -33,26 +33,25 @@ function App() {
           <Route path="/admin/orders/:id" element={<DetailOrder />} />
           <Route path="/admin/products/:id" element={<DetailProduct />} />
           <Route path="/admin/createProduct" element={<CreateProduct />} />
-            <Route path="*" element={
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/order-complete" element={<OrderComplete />} />
-                  <Route path="/producto/:id" element={<ProductoDetalle />} />
-                  <Route path="/categorias" element={<Navigate to="/categorias/laptops%20gamers" />} />
-                  <Route path="/categorias/:nombreCategoria" element={<Categorias />} />
-                </Routes>
-              </Layout>}>
-            </Route>
-          </Routes>
-        </Router>
+
+          {/* Rutas con Layout */}
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="login" element={<Login />} />
+            <Route path="cart" element={<Cart />} />
+            <Route path="checkout" element={<Checkout />} />
+            <Route path="order-complete" element={<OrderComplete />} />
+            <Route path="producto/:id" element={<ProductoDetalle />} />
+            <Route path="categorias" element={<Navigate to="/categorias/laptops%20gamers" replace />} />
+            <Route path="categorias/:nombreCategoria" element={<Categorias />} />
+          </Route>
+
+          {/* Ruta catch-all */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </CategoriaProvider>
     </CartProvider>
   );
 }
 
 export default App;
-
