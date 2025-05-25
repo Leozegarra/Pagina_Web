@@ -3,13 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 
-function Login() {
+function Recover() {
   const [inputEmail, setEmail] = useState();
   const [inputPassword, setPassword] = useState();
   const [inputname, setname] = useState();
   const [inputsname, setsname] = useState();
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
 
 
   const handleSubmit = (e) => {
@@ -20,13 +18,10 @@ function Login() {
     const name = sessionStorage.getItem('name');
     const sname = sessionStorage.getItem('sname');
 
-    if (inputEmail === Email && inputPassword === password) {
+    if (inputEmail === Email && inputname === name && inputsname === sname)  {
       // Autenticación exitosa
-      setError('');
-      alert('Iniciando Sesión...');
-      navigate('/Register.jsx'); // redirige a una página protegida
-    } else {
-      setError('Email o contraseña incorrectos');
+      sessionStorage.setItem('userpass', window.prompt('Establece tu nueva contraseña: '));
+      alert('Cuenta verificada');
     }
 
   };
@@ -34,12 +29,28 @@ function Login() {
   return (
     <>
 
+
       <div >
         <div className='main'>
           <form onSubmit={handleSubmit}>
             <fieldset>
-              <legend className='legend'>Login</legend>
+              <legend className='legend'>Recuperar contraseña</legend>
               <div>
+                <p>Ingresa los datos de tu cuenta: </p>
+
+                <label htmlFor="username">Nombre</label><br />
+                <input className='minput' type='text' value={inputname} placeholder='Nombre de Usuario' autoFocus
+                  onChange={(e) => setname(e.target.value)}
+                  required
+                />
+                <input
+                  type="text"
+                  value={inputsname}
+                  placeholder='Apellido'
+                  onChange={(e) => setsname(e.target.value)}
+                  required
+                /> <br />
+
                 <label htmlFor="email">Email</label><br />
                 <input
                   type="email"
@@ -50,21 +61,10 @@ function Login() {
                   required
                 /><br />
 
-                <label htmlFor="Password">Password</label><br />
-                <input
-                  type="password"
-                  value={inputPassword}
-                  placeholder='Password'
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
               </div><br />
-              {error && <p style={{ color: 'red' }}>{error}</p>}
-              <button type="submit" className='bbutton sbutton'>Login</button>
+              <button type="submit" className='bbutton sbutton'>Enviar</button>
             </fieldset>
           </form>
-          <Link to="/Register">Registrarse</Link><br />
-          <Link to="/Recover">¿Olvidaste tu contraseña?</Link><br />
         </div>
       </div>
     </>
@@ -72,4 +72,4 @@ function Login() {
 }
 
 
-export default Login;
+export default Recover;
