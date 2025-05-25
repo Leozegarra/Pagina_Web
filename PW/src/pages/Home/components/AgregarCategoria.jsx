@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useCategorias } from "./CategoriaContexto";
+import { useCategorias } from "../../../contexts/CategoriaContexto";
 
 export default function AgregarCategoria() {
   const [nombre, setNombre] = useState("");

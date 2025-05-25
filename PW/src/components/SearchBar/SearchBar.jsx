@@ -11,15 +11,10 @@ const SearchBar = ({ data }) => {
         <div style={{ margin: '10px 0' }}>
             <input
                 type="text"
+                className="search-bar"
                 placeholder="Buscar artículos..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                style={{
-                    padding: '8px',
-                    width: '60%',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px'
-                }}
             />
             {searchTerm && (
                 <ul style={{ marginTop: '5px', listStyleType: 'none', padding: 0 }}>
