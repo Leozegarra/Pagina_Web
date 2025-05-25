@@ -25,6 +25,11 @@ const Layout = ({ children }) => {
                   Carrito ({cart.length})
                 </Link>
               </li>
+              <li className="nav-item col-md-4">
+                <Link className="nav-link" to="/GestorCategorias">
+                  Gestor de Categorías
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

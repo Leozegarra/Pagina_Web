@@ -1,34 +1,45 @@
-import React, { useState } from "react";
-import productos from "../../contexts/Ropa";
-import { useCart } from "../../contexts/CartContext";
+import React, { useEffect, useState } from "react"
+import productos from "../../contexts/Ropa"
+import { useCart } from "../../contexts/CartContext"
 
-const obtenerCategorias = (productos) => {
-  return [...new Set(productos.map((p) => p.categoria))];
-};
+const obtenerCategoriasBase = (productos) => {
+  return [...new Set(productos.map((p) => p.categoria))]
+}
 
 function App() {
-  const categorias = obtenerCategorias(productos);
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(categorias[0]);
-  const [modalAbierto, setModalAbierto] = useState(false);
-  const [productoModal, setProductoModal] = useState(null);
+  const categoriasBase = obtenerCategoriasBase(productos)
+  const [categorias, setCategorias] = useState([])
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("")
+  const [modalAbierto, setModalAbierto] = useState(false)
+  const [productoModal, setProductoModal] = useState(null)
+
+  const { addToCart } = useCart()
+
+  // Cargar categorías combinadas al iniciar
+  useEffect(() => {
+    const extras = JSON.parse(localStorage.getItem("categoriasExtra")) || []
+    const todas = [...new Set([...categoriasBase, ...extras])]
+    setCategorias(todas)
+    setCategoriaSeleccionada(todas[0])
+  }, [])
 
   const productosFiltrados = productos.filter(
     (p) => p.categoria === categoriaSeleccionada
-  );
+  )
 
   const abrirModal = (producto) => {
-    setProductoModal(producto);
-    setModalAbierto(true);
-  };
+    setProductoModal(producto)
+    setModalAbierto(true)
+  }
 
   const cerrarModal = () => {
-    setModalAbierto(false);
-    setProductoModal(null);
-  };
+    setModalAbierto(false)
+    setProductoModal(null)
+  }
 
-  const { addToCart } = useCart();
   return (
     <div style={{ display: "flex", height: "100vh" }}>
+      {/* Panel lateral de categorías */}
       <div style={{ width: "200px", borderRight: "1px solid #ccc", padding: 20 }}>
         <h3>Categorías</h3>
         <ul style={{ listStyle: "none", padding: 0 }}>
@@ -49,6 +60,7 @@ function App() {
         </ul>
       </div>
 
+      {/* Productos filtrados */}
       <div style={{ flex: 1, padding: 20, display: "flex", flexWrap: "wrap", gap: 20 }}>
         {productosFiltrados.map((producto) => (
           <div
@@ -64,8 +76,13 @@ function App() {
             <div>{producto.name}</div>
           </div>
         ))}
+
+        {productosFiltrados.length === 0 && (
+          <div style={{ padding: 40 }}>No hay productos en esta categoría.</div>
+        )}
       </div>
 
+      {/* Modal de producto */}
       {modalAbierto && productoModal && (
         <div
           onClick={cerrarModal}
@@ -99,8 +116,8 @@ function App() {
             </p>
             <button
               onClick={() => {
-                addToCart(productoModal);
-                cerrarModal();
+                addToCart(productoModal)
+                cerrarModal()
               }}
               style={{
                 background: "#007bff",
@@ -117,7 +134,7 @@ function App() {
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
