@@ -1,11 +1,14 @@
 import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../index.css';
+import { useCart } from '../../contexts/CartContext'
 import SearchBar from '../SearchBar/SearchBar';
+
 const Layout = () => {
 
-    const items = ['Articulo 1', 'Articulo 2', 'Articulo 3', 'Articulo 4'];
+    const { cart } = useCart()
 
     return (
         <>
@@ -26,6 +29,7 @@ const Layout = () => {
                         <li><Link to="/productos">Productos</Link></li>
                         <li><Link to="/contacto">Contacto</Link></li>
                         <li><Link to="/login">Iniciar Sesión</Link></li>
+                        <li className="nav-item"><Link className="nav-link" to="/cart"> Carrito ({cart.length})</Link></li>
                         </ul>
                     </nav>
                 </header>

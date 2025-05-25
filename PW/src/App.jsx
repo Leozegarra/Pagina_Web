@@ -6,6 +6,16 @@ import { CategoriaProvider } from './contexts/CategoriaContexto';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { CartProvider } from './contexts/CartContext';
+import Cart from "./pages/Cart/Cart";
+import Checkout from "./pages/Checkout/Checkout";
+import OrderComplete from "./pages/OrderComplete/OrderComplete";
+import ListUsers from "./pages/ListUsers/ListUsers";
+import ListOrders from "./pages/ListOrders/ListOrders";
+import DetailUser from "./pages/DetailUser/DetailUser";
+import DetailOrder from "./pages/DetailOrder/DetailOrder";
+import DetailProduct from "./pages/DetailProduct/DetailProduct";
+import ListProducts from "./pages/ListProducts/ListProducts";
+import CreateProduct from "./pages/CreateProduct/CreateProduct";
 import Login from './pages/Login/Login';
 import Categorias from './pages/Categorias/Categorias';
 import ProductoDetalle from './pages/DetailProduct/ProductoDetalle';
@@ -16,16 +26,26 @@ function App() {
       <CategoriaProvider>
         <Router>
           <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/producto/:id" element={<ProductoDetalle />} />
-
-              {/* ✅ Ruta general para categorías (opcionalmente redirigida) */}
-              <Route path="/categorias" element={<Navigate to="/categorias/laptops%20gamers" />} />
-
-              {/* ✅ Ruta dinámica por nombre de categoría */}
-              <Route path="/categorias/:nombreCategoria" element={<Categorias />} />
+          <Route path="/admin/listUsers" element={<ListUsers />} />
+          <Route path="/admin/listOrders" element={<ListOrders />} />
+          <Route path="/admin/listProducts" element={<ListProducts />} />
+          <Route path="/admin/users/:id" element={<DetailUser />} />
+          <Route path="/admin/orders/:id" element={<DetailOrder />} />
+          <Route path="/admin/products/:id" element={<DetailProduct />} />
+          <Route path="/admin/createProduct" element={<CreateProduct />} />
+            <Route path="*" element={
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/order-complete" element={<OrderComplete />} />
+                  <Route path="/producto/:id" element={<ProductoDetalle />} />
+                  <Route path="/categorias" element={<Navigate to="/categorias/laptops%20gamers" />} />
+                  <Route path="/categorias/:nombreCategoria" element={<Categorias />} />
+                </Routes>
+              </Layout>}>
             </Route>
           </Routes>
         </Router>
