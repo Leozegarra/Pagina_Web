@@ -1,24 +1,32 @@
+import React from "react";
+import Carrusel from "./components/Carrusel"; // tu carrusel Bootstrap existente
+import { Container } from "react-bootstrap"; // si usas React Bootstrap
+import AgregarCategoria from "./components/AgregarCategoria"; // componente para añadir categorías
+import CarruselCategorias from "./components/CarruselCategorias"; // carrusel con categorías (react-slick)
 import ProductCard from './components/ProductCard'
+import CarruselProductosAleatorios from "./components/CarruselProductos";
 
-const Home = () => {
-  const products = [
-    { id: 1, name: 'Producto 1', price: 100, image: 'https://via.placeholder.com/150' },
-    { id: 2, name: 'Producto 2', price: 200, image: 'https://via.placeholder.com/150' },
-    { id: 3, name: 'Producto 3', price: 300, image: 'https://via.placeholder.com/150' }
-  ]
 
+export default function Home() {
   return (
-    <div className="container">
-      <h1 className="text-center mb-4">Nuestros Productos</h1>
-      <div className="row row-cols-1 row-cols-md-3 g-4">
-        {products.map(product => (
-          <div key={product.id} className="col">
-            <ProductCard product={product} />
-          </div>
-        ))}
+    <div>
+      <Carrusel />
+      <br /><br />
+      <h1>Explora las Categorías</h1>
+      <br /><br />
+      <div style={{ backgroundColor: "#E2E8F0", padding: "2rem 0", marginBottom: "5rem"}}>
+        <Container>
+          <CarruselCategorias />
+        </Container>
+      </div>
+      <br /><br />
+      <h1>Los Mejores Productos</h1>
+      <br /><br />
+      <div style={{ backgroundColor: "#E2E8F0", padding: "2rem 0", marginBottom: "5rem"}}>
+        <Container>
+          <CarruselProductosAleatorios />
+        </Container>
       </div>
     </div>
-  )
+  );
 }
-
-export default Home 

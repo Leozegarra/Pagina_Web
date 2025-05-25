@@ -1,0 +1,22 @@
+// src/pages/ProductoDetalle.jsx
+import React from "react";
+import { useParams } from "react-router-dom";
+import productos from "../../contexts/ProductosJSON";
+
+const ProductoDetalle = () => {
+  const { id } = useParams();
+  const producto = productos.find(p => p.id === parseInt(id));
+
+  if (!producto) return <div>Producto no encontrado.</div>;
+
+  return (
+    <div style={{ padding: 30 }}>
+      <h2>{producto.name}</h2>
+      <img src={producto.imagen} alt={producto.name} width={300} />
+      <p><strong>Precio:</strong> S/ {producto.price}</p>
+      <p><strong>Descripción:</strong> {producto.descripcion}</p>
+    </div>
+  );
+};
+
+export default ProductoDetalle;
