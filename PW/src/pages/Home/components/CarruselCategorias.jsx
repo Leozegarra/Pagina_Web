@@ -18,27 +18,38 @@ export default function CarruselCategorias() {
   };
 
   return (
-  <Slider {...settings}>
-    {categorias.map((cat, idx) => (
-      <div
-        key={idx}
-        style={{
-          padding: "10px",
-          textAlign: "center",
-          cursor: "pointer",
-        }}
-      >
-        <div className="categoria-circulo">
-          <img
-            src={cat.imagen}
-            alt={cat.nombre}
-            className="img-categoria"
-          />
-        </div>
-        <h3 className="categoria-titulo">{cat.nombre}</h3>
-      </div>
-    ))}
-  </Slider>
- );
+    <Slider {...settings}>
+      {categorias.map((cat, idx) => (
+        <div
+          key={idx}
+          style={{
+            padding: "10px",
+            textAlign: "center",
+            cursor: "grab", // permite arrastrar el carrusel
+          }}
+        >
+          <div className="categoria-circulo">
+            <img
+              src={cat.imagen}
+              alt={cat.nombre}
+              className="img-categoria"
+              // No se tocan los estilos originales
+            />
+          </div>
 
+          {/* Título sin modificar */}
+          <h3 className="categoria-titulo">{cat.nombre}</h3>
+
+          {/* Link aparte */}
+          <Link
+            to={`/categorias/${encodeURIComponent(cat.nombre)}`}
+            className="ver-productos-link"
+            onClick={(e) => e.stopPropagation()}
+          >
+            Ver productos
+          </Link>
+        </div>
+      ))}
+    </Slider>
+  );
 }

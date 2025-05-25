@@ -1,27 +1,21 @@
-// CategoriaContexto.jsx
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useContext } from "react";
+import productos from "./ProductosJSON"; // Asegúrate que esta ruta es correcta
 
-const CategoriaContexto = createContext();
+const CategoriaContext = createContext();
 
-export function CategoriaProv({ children }) {
-  const [categorias, setCategorias] = useState([
-    { nombre: "Celulares", imagen: "https://raw.githubusercontent.com/hdpngworld/HPW/main/uploads/65038654434d0-iPhone%2015%20Pro%20Natural%20titanium%20png.png" },
-    { nombre: "Videojuegos", imagen: "https://plazavea.vteximg.com.br/arquivos/categor%C3%ADa-VIDEOJUEGOS-NintendoSwitch-D.png" },
-    { nombre: "Laptops", imagen: "https://p2-ofp.static.pub//fes/cms/2024/07/17/109vq5fdalv01w5jsu6vh35ncnk5jn890135.png" },
-    { nombre: "Laptops Gamer", imagen: "https://cuscoinformatico.com/storage/LAPTOP%20GAMER%20MSI%20SWORD%2017%20HX%20B14VFKG.png" },
-  ]);
-
-  function agregarCategoria(nueva) {
-    setCategorias((prev) => [...prev, nueva]);
-  }
+export const CategoriaProvider = ({ children }) => {
+  // Agrupar productos por categoría única con imagen
+  const categoriasUnicas = Array.from(
+    new Map(
+      productos.map((p) => [p.categoria, { nombre: p.categoria, imagen: p.imagen }])
+    ).values()
+  );
 
   return (
-    <CategoriaContexto.Provider value={{ categorias, agregarCategoria }}>
+    <CategoriaContext.Provider value={{ categorias: categoriasUnicas }}>
       {children}
-    </CategoriaContexto.Provider>
+    </CategoriaContext.Provider>
   );
-}
+};
 
-export function useCategorias() {
-  return useContext(CategoriaContexto);
-}
+export const useCategorias = () => useContext(CategoriaContext);
