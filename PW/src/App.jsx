@@ -11,6 +11,11 @@ import ListUsers from "./pages/ListUsers/ListUsers";
 import ListOrders from "./pages/ListOrders/ListOrders";
 import DetailUser from "./pages/DetailUser/DetailUser";
 import DetailOrder from "./pages/DetailOrder/DetailOrder";
+import DetailProduct from "./pages/DetailProduct/DetailProduct";
+import ListProducts from "./pages/ListProducts/ListProducts";
+import CreateProduct from "./pages/CreateProduct/CreateProduct";
+
+
 
 function App() {
   return (
@@ -18,8 +23,11 @@ function App() {
       <Routes>
         <Route path="/admin/listUsers" element={<ListUsers />} />
         <Route path="/admin/listOrders" element={<ListOrders />} />
+        <Route path="/admin/listProducts" element={<ListProducts />} />
         <Route path="/admin/users/:id" element={<DetailUser />} />
         <Route path="/admin/orders/:id" element={<DetailOrder />} />
+        <Route path="/admin/products/:id" element={<DetailProduct />} />
+        <Route path="/admin/createProduct" element={<CreateProduct />} />
         <Route
           path="*"
           element={
@@ -29,6 +37,7 @@ function App() {
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/order-complete" element={<OrderComplete />} />
+
               </Routes>
             </Layout>
           }
