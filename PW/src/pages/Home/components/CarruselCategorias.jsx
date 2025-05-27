@@ -25,7 +25,7 @@ export default function CarruselCategorias() {
           style={{
             padding: "10px",
             textAlign: "center",
-            cursor: "grab", // permite arrastrar el carrusel
+            cursor: "grab",
           }}
         >
           <div className="categoria-circulo">
@@ -33,11 +33,9 @@ export default function CarruselCategorias() {
               src={cat.imagen}
               alt={cat.nombre}
               className="img-categoria"
-              // No se tocan los estilos originales
             />
           </div>
 
-          {/* Título sin modificar */}
           <h3 className="categoria-titulo">{cat.nombre}</h3>
 
           {/* Link aparte */}
