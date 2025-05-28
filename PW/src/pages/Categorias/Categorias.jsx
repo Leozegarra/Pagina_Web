@@ -1,107 +1,138 @@
-import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// VistaCategoria.jsx
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import productos from "../../contexts/ProductosJSON";
+import { useCart } from "../../contexts/CartContext";
 
-const Categorias = () => {
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
-  const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
+const obtenerCategorias = (productos) => {
+  return [...new Set(productos.map((p) => p.categoria))];
+};
 
-  const imagenes = {
-    laptops: [
-      'https://oechsle.vteximg.com.br/arquivos/ids/15312583-1000-1000/image-74d0e2a70d6346caa71cbded82fba397.jpg?v=638281822845370000',
-      'https://hca.pe/storage/media/large_l4cYd1hkUF2XNAHxGfIaFldJ8OgcWqN1qH2NNxPK.png',
-      'https://cdn.mos.cms.futurecdn.net/UbMJMVGeKd2UvjMvkZZPX6.jpg',
-    ],
-    celulares: [
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAJMLRaMyjqaTPqq0wXPq5qs6PqRmknVb7gA&s',
-      'https://i.blogs.es/121216/nokia-1100/500_333.jpeg',
-      'https://f.rpp-noticias.io/2024/10/07/1652095sin-titulo-1jpg.jpg',
-    ],
-    computadoras: [
-      'https://pcya.pe/wp-content/uploads/2024/01/PCRYZENMONI27.png',
-      'https://promart.vteximg.com.br/arquivos/ids/6934943-1000-1000/image-b2d24826c4ad4020b9b685dace58f42a.jpg?v=638179439093670000',
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5dNSCdaszHimfMCpvpbhMBjfCrQ_yxjT9yw&s',
-    ],
+function VistaCategoria() {
+  const categorias = obtenerCategorias(productos);
+  const { nombreCategoria } = useParams();
+  const navigate = useNavigate();
+
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(nombreCategoria || categorias[0]);
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [productoModal, setProductoModal] = useState(null);
+
+  useEffect(() => {
+    if (nombreCategoria) {
+      setCategoriaSeleccionada(nombreCategoria);
+    }
+  }, [nombreCategoria]);
+
+  const productosFiltrados = productos.filter(
+    (p) => p.categoria === categoriaSeleccionada
+  );
+
+  const abrirModal = (producto) => {
+    setProductoModal(producto);
+    setModalAbierto(true);
   };
 
-  const handleCategoriaClick = (categoria) => {
-    setCategoriaSeleccionada(categoria);
+  const cerrarModal = () => {
+    setModalAbierto(false);
+    setProductoModal(null);
   };
 
-  const handleImagenClick = (src) => {
-    setImagenSeleccionada(src);
-  };
-
-  const handleCerrarModal = () => {
-    setImagenSeleccionada(null);
-  };
+  const { addToCart } = useCart();
 
   return (
-    <div className="container mt-4">
-      <div className="row">
-        {/* Botones a la izquierda */}
-        <div className="col-md-3">
-          <h5 className="mb-3">Categorías</h5>
-          {Object.keys(imagenes).map((categoria) => (
-            <button
-              key={categoria}
-              className="btn w-100 text-start border-0 bg-transparent mb-2 text-primary"
-              onClick={() => handleCategoriaClick(categoria)}
+    <div style={{ display: "flex", height: "100vh" }}>
+      <div style={{ width: "200px", borderRight: "1px solid #ccc", padding: 20 }}>
+        <h3>Categorías</h3>
+        <ul style={{ listStyle: "none", padding: 0 }}>
+          {categorias.map((cat) => (
+            <li
+              key={cat}
               style={{
-                fontWeight: categoriaSeleccionada === categoria ? 'bold' : 'normal',
-                textDecoration: categoriaSeleccionada === categoria ? 'underline' : 'none',
+                padding: "8px",
+                cursor: "pointer",
+                background: cat === categoriaSeleccionada ? "#e0e0e0" : "transparent",
+                fontWeight: cat === categoriaSeleccionada ? "bold" : "normal"
+              }}
+              onClick={() => {
+                setCategoriaSeleccionada(cat);
+                navigate(`/categorias/${encodeURIComponent(cat)}`);
               }}
             >
-              {categoria.charAt(0).toUpperCase() + categoria.slice(1)}
-            </button>
+              {cat}
+            </li>
           ))}
-        </div>
-
-        {/* Imágenes a la derecha */}
-        <div className="col-md-9">
-          {categoriaSeleccionada && (
-            <div className="row">
-              <h4 className="mb-3">
-                {categoriaSeleccionada.charAt(0).toUpperCase() + categoriaSeleccionada.slice(1)}
-              </h4>
-              {imagenes[categoriaSeleccionada].map((src, index) => (
-                <div className="col-md-4 mb-3" key={index}>
-                  <img
-                    src={src}
-                    alt={`imagen-${index}`}
-                    className="img-fluid rounded shadow"
-                    onClick={() => handleImagenClick(src)}
-                    style={{ cursor: 'pointer' }}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        </ul>
       </div>
 
-      {/* Modal */}
-      {imagenSeleccionada && (
+      <div style={{ flex: 1, padding: 20, display: "flex", flexWrap: "wrap", gap: 20 }}>
+        {productosFiltrados.map((producto) => (
+          <div
+            key={producto.id}
+            style={{ cursor: "pointer", width: 180, textAlign: "center" }}
+            onClick={() => abrirModal(producto)}
+          >
+            <img
+              src={producto.imagen}
+              alt={producto.name}
+              style={{ width: 150, height: 150, objectFit: "cover", borderRadius: 8 }}
+            />
+            <div>{producto.name}</div>
+          </div>
+        ))}
+      </div>
+
+      {modalAbierto && productoModal && (
         <div
-          className="modal show fade d-block"
-          tabIndex="-1"
-          style={{ backgroundColor: 'rgba(0,0,0,0.8)' }}
-          onClick={handleCerrarModal}
+          onClick={cerrarModal}
+          style={{
+            position: "fixed",
+            top: 0, left: 0, right: 0, bottom: 0,
+            background: "rgba(0,0,0,0.4)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }}
         >
-          <div className="modal-dialog modal-lg modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Vista previa</h5>
-                <button type="button" className="btn-close" onClick={handleCerrarModal}></button>
-              </div>
-              <div className="modal-body text-center">
-                <img src={imagenSeleccionada} alt="vista previa" className="img-fluid rounded" />
-              </div>
-            </div>
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: "#fff",
+              padding: 30,
+              borderRadius: 10,
+              minWidth: 300,
+              textAlign: "center"
+            }}
+          >
+            <h2>{productoModal.name}</h2>
+            <img
+              src={productoModal.imagen}
+              alt={productoModal.name}
+              style={{ width: 200, height: 200, objectFit: "cover", borderRadius: 8 }}
+            />
+            <p style={{ fontWeight: "bold", fontSize: 18 }}>
+              Precio: S/ {productoModal.price}
+            </p>
+            <button
+              onClick={() => {
+                addToCart(productoModal);
+                cerrarModal();
+              }}
+              style={{
+                background: "#007bff",
+                color: "#fff",
+                border: "none",
+                padding: "10px 20px",
+                borderRadius: 5,
+                cursor: "pointer"
+              }}
+            >
+              Agregar al carrito
+            </button>
           </div>
         </div>
       )}
     </div>
   );
-};
+}
 
-export default Categorias;
+export default VistaCategoria;
