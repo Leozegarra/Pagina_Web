@@ -1,0 +1,123 @@
+/* */
+
+body {
+  font-family: Verdana, sans-serif;
+  height: 100%;
+  margin-bottom: 10px;
+  background-color: rgba(26,32,46,255);
+}
+
+header {
+  font-size: 25px;
+  font-weight: 800;
+  font-family: sans-serif;
+  width: 100%;
+}
+
+h1 {
+  color: green;
+  text-transform: uppercase;
+  border-bottom: 1px solid red;
+  text-shadow: .2em .2em silver;
+}
+
+h5 {
+  color:#fff; 
+}
+p {
+  font-size: small;
+  font-family: sans-serif;
+  margin-left: 50px;
+}
+
+header>h2 {
+  text-shadow: .2em .2em silver;
+}
+
+footer > p {
+  font-size: smaller;
+  color: white;
+  align-content: center;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: black;
+  color: white;
+  text-align: center;
+}
+
+/*
+footer {
+  position: relative;
+  width: 100%;
+  background-color: black;
+  margin-top: -100px;
+  clear: both;
+
+}
+*/
+img {
+  float: left;
+  margin: 0 12px;
+}
+
+nav a {
+  text-decoration: none;
+  color: inherit;
+  font-size: 14px;
+}
+
+nav li {
+  display: inline-block;
+  width: 10%;
+  padding: 5px 10px;
+  background-color: #000;
+  border: 1px solid #000;
+  text-align: center;
+  color: #fff;
+}
+
+nav li:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+svg {
+  width: 100px;
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
+}
+
+#contenedor {
+  text-align: left;
+  width: 100%;
+  margin: auto;
+}
+
+#lateral {
+  width: 20%;
+  /* Este será el ancho que tendrá tu columna */
+  background-color: #CCCCCC;
+  /* Aquí pon el color del fondo que quieras para este lateral */
+  float: right;
+  /* Aquí determinas de lado quieres quede esta "columna" */
+  font-size: small;
+}
+
+#principal {
+  width: 75%;
+  float: left;
+  background-color: #FFFFFF;
+}
+
+/* Para limpiar los floats */
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
