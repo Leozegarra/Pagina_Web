@@ -2,19 +2,16 @@ import React, { useState, useEffect } from "react"
 import productos from "../../contexts/Ropa"
 
 const GestorCategorias = () => {
-  // Extrae las categorías únicas del archivo original
   const categoriasBase = [...new Set(productos.map(p => p.categoria))]
 
   const [categorias, setCategorias] = useState(categoriasBase)
 
-  // Cargar las categorías adicionales guardadas en localStorage
   useEffect(() => {
     const guardadas = JSON.parse(localStorage.getItem("categoriasExtra")) || []
     const nuevas = [...new Set([...categoriasBase, ...guardadas])]
     setCategorias(nuevas)
   }, [])
 
-  // Agregar una nueva categoría
   const agregarCategoria = () => {
     const nueva = prompt("Ingresa el nombre de la nueva categoría:")
     const limpia = nueva?.trim().toLowerCase()

@@ -15,7 +15,7 @@ function App() {
 
   const { addToCart } = useCart()
 
-  // Cargar categorías combinadas al iniciar
+ 
   useEffect(() => {
     const extras = JSON.parse(localStorage.getItem("categoriasExtra")) || []
     const todas = [...new Set([...categoriasBase, ...extras])]
@@ -39,7 +39,6 @@ function App() {
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
-      {/* Panel lateral de categorías */}
       <div style={{ width: "200px", borderRight: "1px solid #ccc", padding: 20 }}>
         <h3>Categorías</h3>
         <ul style={{ listStyle: "none", padding: 0 }}>
@@ -60,7 +59,6 @@ function App() {
         </ul>
       </div>
 
-      {/* Productos filtrados */}
       <div style={{ flex: 1, padding: 20, display: "flex", flexWrap: "wrap", gap: 20 }}>
         {productosFiltrados.map((producto) => (
           <div
@@ -82,7 +80,6 @@ function App() {
         )}
       </div>
 
-      {/* Modal de producto */}
       {modalAbierto && productoModal && (
         <div
           onClick={cerrarModal}
