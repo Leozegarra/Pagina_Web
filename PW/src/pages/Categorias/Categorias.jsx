@@ -13,7 +13,7 @@ function App() {
   const [modalAbierto, setModalAbierto] = useState(false)
   const [productoModal, setProductoModal] = useState(null)
 
-  const { addToCart } = useCart()
+  const { addToCart } = useCart()//hook
 
  
   useEffect(() => {
