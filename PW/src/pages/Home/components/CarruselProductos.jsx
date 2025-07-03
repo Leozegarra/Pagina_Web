@@ -16,7 +16,7 @@ export default function CarruselProductosAleatorios() {
     slidesToShow: 5,
     slidesToScroll: 1,
     arrows: true,
-    swipe: false,            // Desactiva el swipe/drag con mouse o touch
+    swipe: false,
     responsive: [
       {
         breakpoint: 1024,

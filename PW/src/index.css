@@ -178,3 +178,7 @@ svg {
   display: table;
   clear: both;
 }
+
+*{
+  color: gray;
+}

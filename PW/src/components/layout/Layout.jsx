@@ -4,10 +4,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../index.css';
 import { useCart } from '../../contexts/CartContext'
 import SearchBar from '../SearchBar/SearchBar';
+import productos from "../../contexts/ProductosJSON";
+
 
 const Layout = () => {
 
     const { cart } = useCart()
+    const categoriasUnicas = Array.from(new Set(productos.map(p => p.categoria)));
 
     return (
         <>
@@ -25,8 +28,6 @@ const Layout = () => {
                         <ul>
                         <li><Link to="/">Inicio</Link></li>
                         <li><Link to="/categorias">Categorías</Link></li>
-                        <li><Link to="/productos">Productos</Link></li>
-                        <li><Link to="/contacto">Contacto</Link></li>
                         <li><Link to="/login">Iniciar Sesión</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/cart"> Carrito ({cart.length})</Link></li>
                         </ul>
@@ -39,9 +40,25 @@ const Layout = () => {
                 </main>
             </div>
 
-            <footer>
-                <p>&copy; 2025 Programacion Web 2025-1</p>
+            <footer style={{ color: 'black', padding: '10px', textAlign: 'center' }}>
+                <p>&copy; Zona Tech - 2025</p>
+                <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '15px', marginTop: '10px' }}>
+                    {[...new Set(productos.map(p => p.categoria))].map((categoria, index) => (
+                    <Link
+                        key={index}
+                        to={`/categorias/${encodeURIComponent(categoria)}`}
+                        style={{
+                        color: 'black',
+                        textDecoration: 'none',
+                        fontWeight: 'bold'
+                        }}
+                    >
+                        {categoria}
+                    </Link>
+                    ))}
+                </div>
             </footer>
+
 
         </>
     )

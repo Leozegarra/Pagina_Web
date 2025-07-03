@@ -28,6 +28,7 @@ function App() {
   return (
     <CartProvider>
       <CategoriaProvider>
+
           <Routes>
           <Route path="/admin/listUsers" element={<ListUsers />} />
           <Route path="/admin/listOrders" element={<ListOrders />} />
@@ -36,6 +37,7 @@ function App() {
           <Route path="/admin/orders/:id" element={<DetailOrder />} />
           <Route path="/admin/products/:id" element={<DetailProduct />} />
           <Route path="/admin/createProduct" element={<CreateProduct />} />
+
           {/* Rutas con Layout */}
           <Route path="/" element={<Layout />}>
             <Route path='/register' element={<Register/>}/>
@@ -59,4 +61,3 @@ function App() {
 }
 
 export default App;
-

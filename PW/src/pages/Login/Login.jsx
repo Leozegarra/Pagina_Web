@@ -1,46 +1,75 @@
+import { Link } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
- const Login = () =>{
-  const [inputEmail, setEmail] = useState('');
-  const [inputpassword, setpassword] = useState('');
+
+function Login() {
+  const [inputEmail, setEmail] = useState();
+  const [inputPassword, setPassword] = useState();
+  const [inputname, setname] = useState();
+  const [inputsname, setsname] = useState();
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
 
   const handleSubmit = (e) => {
-    e.preventDefault(); // Previene la navegación a la URL del enlace
-  };
+    e.preventDefault();
 
+    const Email = sessionStorage.getItem('useremail');
+    const password = sessionStorage.getItem('userpass');
+    const name = sessionStorage.getItem('name');
+    const sname = sessionStorage.getItem('sname');
+
+    if (inputEmail === Email && inputPassword === password) {
+      // Autenticación exitosa
+      setError('');
+      alert('Iniciando Sesión...');
+      navigate('/Register.jsx'); // redirige a una página protegida
+    } else {
+      setError('Email o contraseña incorrectos');
+    }
+
+  };
 
   return (
     <>
-      <header>
-        <img src={"./logoTech.jpeg"} alt="Zona Tech" />
-      </header>
-      <div>
-        <div id='main'>
+
+      <div >
+        <div className='main'>
           <form onSubmit={handleSubmit}>
             <fieldset>
               <legend className='legend'>Login</legend>
               <div>
                 <label htmlFor="email">Email</label><br />
-                <input type="email" placeholder='example@gmail.com' autoFocus
+                <input
+                  type="email"
+                  value={inputEmail}
+                  placeholder='example@gmail.com'
+                  autoFocus
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 /><br />
 
                 <label htmlFor="Password">Password</label><br />
-                <input type="password" placeholder='Password' 
-                onChange={(e) => setpassword(e.target.value)}
+                <input
+                  type="password"
+                  value={inputPassword}
+                  placeholder='Password'
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
-                
               </div><br />
-              <button>Login</button>
-
+              {error && <p style={{ color: 'red' }}>{error}</p>}
+              <button type="submit" className='bbutton sbutton'>Login</button>
             </fieldset>
           </form>
-          
+          <Link to="./Login/Registrar">Registrarse</Link><br />
+          <Link to="./Login/Recover">¿Olvidaste tu contraseña?</Link><br />
         </div>
       </div>
     </>
-  )
+  );
 }
+
+
 export default Login;
