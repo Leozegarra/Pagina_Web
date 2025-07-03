@@ -20,13 +20,12 @@ const ProductTable = ({ products, onDelete, onEdit }) => {
     <table className="w-full bg-white rounded-lg shadow">
       <thead>
         <tr className="bg-gray-100 text-left">
-          <th className="p-2">Nombre</th>
-          <th className="p-2">Categoría</th>
-          <th className="p-2">Presentación</th>
-          <th className="p-2">Descripción</th>
-          <th className="p-2">Stock</th>
           <th className="p-2">Imagen</th>
-          <th className="p-2">Acciones</th>
+          <th className="p-2">ID</th>
+          <th className="p-2">Nombre</th>
+          <th className="p-2">Categoria</th>
+          <th className="p-2">Descripcion</th>
+          <th className="p-2">Stock</th>
         </tr>
       </thead>
       <tbody>

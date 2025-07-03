@@ -1,9 +1,11 @@
-// src/App.jsx
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-import { CartProvider } from "./contexts/CartContext";
-import Layout from "./components/layout/Layout";
-import Home from "./pages/Home/Home";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Layout from './components/layout/Layout';
+import Home from './pages/Home/Home';
+import { CategoriaProvider } from './contexts/CategoriaContexto';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { CartProvider } from './contexts/CartContext';
 import Cart from "./pages/Cart/Cart";
 import Checkout from "./pages/Checkout/Checkout";
 import OrderComplete from "./pages/OrderComplete/OrderComplete";
@@ -12,37 +14,53 @@ import ListOrders from "./pages/ListOrders/ListOrders";
 import DetailUser from "./pages/DetailUser/DetailUser";
 import DetailOrder from "./pages/DetailOrder/DetailOrder";
 import DetailProduct from "./pages/DetailProduct/DetailProduct";
-import ListProducts from "./pages/ListProducts/ListProducts";
+import ListProducts from "./pages/listProducts/ListProducts";
 import CreateProduct from "./pages/CreateProduct/CreateProduct";
+import Login from './pages/Login/Login';
 
-
+import SCategorias from './pages/Categorias/SCategorias';
+import Categorias from './pages/Categorias/Categorias';
+import GestorCategorias from './pages/Categorias/GCategorias';
+import ProductoDetalle from './pages/DetailProduct/ProductoDetalle';
+import Register from './pages/Login/Registrar';
+import Recover from './pages/Login/Recover';
 
 function App() {
   return (
     <CartProvider>
-      <Routes>
-        <Route path="/admin/listUsers" element={<ListUsers />} />
-        <Route path="/admin/listOrders" element={<ListOrders />} />
-        <Route path="/admin/listProducts" element={<ListProducts />} />
-        <Route path="/admin/users/:id" element={<DetailUser />} />
-        <Route path="/admin/orders/:id" element={<DetailOrder />} />
-        <Route path="/admin/products/:id" element={<DetailProduct />} />
-        <Route path="/admin/createProduct" element={<CreateProduct />} />
-        <Route
-          path="*"
-          element={
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route path="/order-complete" element={<OrderComplete />} />
+      <CategoriaProvider>
+        <Routes>
+          {/* Rutas Admin */}
+    
+          <Route path="/admin/listUsers" element={<ListUsers />} />
+          <Route path="/admin/listOrders" element={<ListOrders />} />
+          <Route path="/admin/listProducts" element={<ListProducts />} />
+          <Route path="/admin/users/:id" element={<DetailUser />} />
+          <Route path="/admin/orders/:id" element={<DetailOrder />} />
+          <Route path="/admin/products/:id" element={<DetailProduct />} />
+          <Route path="/admin/createProduct" element={<CreateProduct />} />
+          <Route path="/admin/categorias" element={<Categorias />} />
+          <Route path="/admin/gestorCategorias" element={<GestorCategorias />} />
 
-              </Routes>
-            </Layout>
-          }
-        />
-      </Routes>
+          {/* Rutas con Layout */}
+          <Route path="/" element={<Layout />}>
+            <Route path='/register' element={<Register/>}/>
+            <Route path='/recover' element={<Recover/>}/>
+            <Route index element={<Home />} />
+            <Route path="login" element={<Login />} />
+            <Route path="cart" element={<Cart />} />
+            <Route path="checkout" element={<Checkout />} />
+            <Route path="order-complete" element={<OrderComplete />} />
+            <Route path="producto/:id" element={<ProductoDetalle />} />
+            <Route path="categorias" element={<Navigate to="/categorias/laptops%20gamers" replace />} />
+            <Route path="categorias/:nombreCategoria" element={<Categorias />} />
+            <Route path="SCategorias" element={<SCategorias />} />
+          </Route>
+
+          {/* Ruta catch-all */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </CategoriaProvider>
     </CartProvider>
   );
 }

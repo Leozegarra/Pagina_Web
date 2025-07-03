@@ -1,16 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DashboardHeader from '../../components/DashboardHeader/DashBoardHeader';
 import SideBar from '../../components/SideBar/SideBar';
+import productos from '../../contexts/ProductosJSON';
+
+const STORAGE_KEY = 'products_data';
 
 const CreateProduct = () => {
   const [formData, setFormData] = useState({
     nombre: '',
-    presentacion: '',
     categoria: '',
     descripcion: '',
     stock: 0,
     imagen: 'https://via.placeholder.com/150'
   });
+
+  const categoriasUnicas = Array.from(new Set(productos.map(p => p.categoria)));
+
+  const [products, setProducts] = useState(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    if (!localStorage.getItem(STORAGE_KEY)) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(productos));
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,12 +38,29 @@ const CreateProduct = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const existingProducts = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    // Validación de campos
+    if (
+      !formData.nombre.trim() ||
+      !formData.categoria.trim() ||
+      formData.categoria === '' ||
+      formData.categoria === 'Seleccione una categoría' ||
+      !formData.descripcion.trim() ||
+      !formData.imagen.trim() ||
+      formData.stock === '' || formData.stock === null
+    ) {
+      alert('Por favor, complete todos los campos y seleccione una categoría válida.');
+      return;
+    }
 
+    const existingProducts = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
     const newProduct = {
       id: Date.now(),
-      ...formData
-      };
+      name: formData.nombre,
+      category: formData.categoria,
+      description: formData.descripcion,
+      stock: formData.stock,
+      image: formData.imagen
+    };
     const updatedProducts = [...existingProducts, newProduct];
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedProducts));
 
@@ -36,19 +68,13 @@ const CreateProduct = () => {
 
     setFormData({
       nombre: '',
-      presentacion: '',
       categoria: '',
       descripcion: '',
       stock: 0,
       imagen: 'https://via.placeholder.com/150'
     });
-
   };
 
-
-
-    
-  
   return (
     <div className="flex min-h-screen bg-gray-50">
       <SideBar />
@@ -69,18 +95,6 @@ const CreateProduct = () => {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium mb-1">Presentación</label>
-            <input
-              type="text"
-              name="presentacion"
-              value={formData.presentacion}
-              onChange={handleChange}
-              placeholder="Presentación"
-              className="w-full border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-
-          <div>
             <label className="block text-gray-700 font-medium mb-1">Categoría</label>
             <select
               name="categoria"
@@ -89,15 +103,10 @@ const CreateProduct = () => {
               className="w-full border border-gray-300 rounded-lg p-2"
             >
               <option value="">Seleccione una categoría</option>
-              <option value="computadora">Computadoras</option>
-              <option value="monitor">Monitores</option>
-              <option value="consola">Consolas</option>
-              <option value="otro">Otro</option>
+              {categoriasUnicas.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
             </select>
-            {formData.categoria == "otro" && <input type = "text" placeholder="Nueva Categoria"></input>}
-            
-
-            
           </div>
 
           <div>
@@ -113,9 +122,14 @@ const CreateProduct = () => {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium mb-1">Imagen</label>
-            <img src="https://previews.123rf.com/images/alekseyvanin/alekseyvanin1711/alekseyvanin171101174/89765677-agregar-%C3%ADcono-de-imagen.jpg" alt="Preview" className="mb-3 rounded border"  />
-            {/* data base*/}
+            <input
+              type="text"
+              name="imagen"
+              value={formData.imagen}
+              onChange={handleChange}
+              placeholder="Colocar el link de la imagen"
+              className="w-full border border-gray-300 rounded-lg p-2"
+            />
           </div>
 
           <div>
@@ -133,8 +147,7 @@ const CreateProduct = () => {
           <div className="text-end">
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
               Crear Producto
             </button>
           </div>
