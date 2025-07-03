@@ -14,18 +14,22 @@ import ListOrders from "./pages/ListOrders/ListOrders";
 import DetailUser from "./pages/DetailUser/DetailUser";
 import DetailOrder from "./pages/DetailOrder/DetailOrder";
 import DetailProduct from "./pages/DetailProduct/DetailProduct";
-import ListProducts from "./pages/ListProducts/ListProducts";
+import ListProducts from "./pages/listProducts/ListProducts";
 import CreateProduct from "./pages/CreateProduct/CreateProduct";
 import Login from './pages/Login/Login';
+
 import Categorias from './pages/Categorias/Categorias';
 import ProductoDetalle from './pages/DetailProduct/ProductoDetalle';
+import Register from './pages/Login/Registrar'
+import Recover from './pages/Login/Recover'
+
 
 function App() {
   return (
     <CartProvider>
       <CategoriaProvider>
-        <Routes>
-          {/* Rutas Admin */}
+
+          <Routes>
           <Route path="/admin/listUsers" element={<ListUsers />} />
           <Route path="/admin/listOrders" element={<ListOrders />} />
           <Route path="/admin/listProducts" element={<ListProducts />} />
@@ -36,6 +40,8 @@ function App() {
 
           {/* Rutas con Layout */}
           <Route path="/" element={<Layout />}>
+            <Route path='/register' element={<Register/>}/>
+            <Route path='/recover' element={<Recover/>}/>
             <Route index element={<Home />} />
             <Route path="login" element={<Login />} />
             <Route path="cart" element={<Cart />} />
