@@ -17,6 +17,7 @@ import DetailProduct from "./pages/DetailProduct/DetailProduct";
 import ListProducts from "./pages/listProducts/ListProducts";
 import CreateProduct from "./pages/CreateProduct/CreateProduct";
 import Login from './pages/Login/Login';
+import Cuenta from './pages/Cuenta/Cuenta';
 
 import SCategorias from './pages/Categorias/SCategorias';
 import Categorias from './pages/Categorias/Categorias';
@@ -57,6 +58,7 @@ function App() {
               <Route path="categorias" element={<Navigate to="/categorias/laptops%20gamers" replace />} />
               <Route path="categorias/:nombreCategoria" element={<Categorias />} />
               <Route path="SCategorias" element={<SCategorias />} />
+              <Route path="cuenta" element={<Cuenta />} />
             </Route>
 
             {/* Ruta catch-all */}
