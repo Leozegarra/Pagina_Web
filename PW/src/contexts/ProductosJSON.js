@@ -7,6 +7,7 @@ const productos = [
     imagen: "https://images.samsung.com/is/image/samsung/p6pim/uk/np750xqa-kb2uk/gallery/uk-galaxy-book4-edge-15-inch-np750xqaa-526466-np750xqa-kb2uk-thumb-543953953?$UX_EXT2_PNG$",
     descripcion: "Laptop versátil ideal para tareas diarias y trabajo remoto, con pantalla Full HD y procesador eficiente.",
     stock: 100
+
   },
   {
     id: 2,
@@ -16,6 +17,7 @@ const productos = [
     imagen: "https://pe-media.hptiendaenlinea.com/catalog/product/6/K/6K2C8LA-1_T1740503426.png",
     descripcion: "Laptop HP con diseño moderno, adecuada para productividad, estudios y navegación web.",
     stock: 100
+
   },
   {
     id: 3,
@@ -25,6 +27,7 @@ const productos = [
     imagen: "https://images.macrumors.com/t/Au-OUIb73hHvx2w8CirAir5bNbM=/1600x/article-new/2013/09/macbook-air-m2-roundup-header.png",
     descripcion: "MacBook con chip Apple Silicon, pantalla Retina y gran autonomía, ideal para diseño y multimedia.",
     stock: 100
+
   },
   {
     id: 4,
@@ -84,6 +87,9 @@ const productos = [
   // Nuevas categorías
 
   // Videojuegos
+
+  //Consola de Videojuegos
+  
   {
     id: 10,
     name: "PlayStation 5",
