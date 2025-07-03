@@ -1,6 +1,17 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import MapView from './MapView'
 
 const SuccessMessage = () => {
+  const [fullAddress, setFullAddress] = useState('')
+
+  useEffect(() => {
+    const orderForm = JSON.parse(localStorage.getItem('orderForm'))
+    if (orderForm?.fullAddress) {
+      setFullAddress(orderForm.fullAddress)
+    }
+  }, [])
+
   return (
     <div className="card">
       <div className="card-body">
@@ -13,7 +24,15 @@ const SuccessMessage = () => {
         <p className="mb-4">
           Te enviaremos un correo electrónico con los detalles de tu pedido.
         </p>
-        <Link to="/" className="btn btn-primary">
+
+        {fullAddress && (
+          <>
+            <h5 className="mt-4">Ubicación de entrega</h5>
+            <MapView address={fullAddress} />
+          </>
+        )}
+
+        <Link to="/" className="btn btn-primary mt-4">
           Volver a la tienda
         </Link>
       </div>
@@ -21,4 +40,4 @@ const SuccessMessage = () => {
   )
 }
 
-export default SuccessMessage 
+export default SuccessMessage

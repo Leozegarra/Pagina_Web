@@ -1,8 +1,9 @@
 import { useCart } from '../../../contexts/CartContext'
 
 const CartTable = () => {
-  const { cart, removeFromCart } = useCart()
-  const total = cart.reduce((sum, item) => sum + item.price, 0)
+  const { cart, addToCart, removeFromCart } = useCart()
+
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
   return (
     <div className="table-responsive">
@@ -10,7 +11,9 @@ const CartTable = () => {
         <thead>
           <tr>
             <th>Producto</th>
-            <th>Precio</th>
+            <th>Precio unitario</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -18,22 +21,32 @@ const CartTable = () => {
           {cart.map(item => (
             <tr key={item.id}>
               <td>{item.name}</td>
-              <td>${item.price}</td>
+              <td>${item.price.toFixed(2)}</td>
+              <td>{item.quantity}</td>
+              <td>${(item.price * item.quantity).toFixed(2)}</td>
               <td>
-                <button 
-                  className="btn btn-danger btn-sm"
-                  onClick={() => removeFromCart(item.id)}
-                >
-                  Eliminar
-                </button>
+                <div className="btn-group">
+                  <button 
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={() => removeFromCart(item.id)}
+                  >
+                    -
+                  </button>
+                  <button 
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={() => addToCart(item)}
+                  >
+                    +
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
         </tbody>
         <tfoot>
           <tr>
-            <td colSpan="2" className="text-end fw-bold">Total:</td>
-            <td>${total}</td>
+            <td colSpan="3" className="text-end fw-bold">Total:</td>
+            <td colSpan="2">${total.toFixed(2)}</td>
           </tr>
         </tfoot>
       </table>
@@ -41,4 +54,4 @@ const CartTable = () => {
   )
 }
 
-export default CartTable 
+export default CartTable
