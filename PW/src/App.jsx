@@ -18,18 +18,20 @@ import ListProducts from "./pages/listProducts/ListProducts";
 import CreateProduct from "./pages/CreateProduct/CreateProduct";
 import Login from './pages/Login/Login';
 
+import SCategorias from './pages/Categorias/SCategorias';
 import Categorias from './pages/Categorias/Categorias';
+import GestorCategorias from './pages/Categorias/GCategorias';
 import ProductoDetalle from './pages/DetailProduct/ProductoDetalle';
-import Register from './pages/Login/Registrar'
-import Recover from './pages/Login/Recover'
-
+import Register from './pages/Login/Registrar';
+import Recover from './pages/Login/Recover';
 
 function App() {
   return (
     <CartProvider>
       <CategoriaProvider>
-
-          <Routes>
+        <Routes>
+          {/* Rutas Admin */}
+    
           <Route path="/admin/listUsers" element={<ListUsers />} />
           <Route path="/admin/listOrders" element={<ListOrders />} />
           <Route path="/admin/listProducts" element={<ListProducts />} />
@@ -37,6 +39,8 @@ function App() {
           <Route path="/admin/orders/:id" element={<DetailOrder />} />
           <Route path="/admin/products/:id" element={<DetailProduct />} />
           <Route path="/admin/createProduct" element={<CreateProduct />} />
+          <Route path="/admin/categorias" element={<Categorias />} />
+          <Route path="/admin/gestorCategorias" element={<GestorCategorias />} />
 
           {/* Rutas con Layout */}
           <Route path="/" element={<Layout />}>
@@ -50,6 +54,7 @@ function App() {
             <Route path="producto/:id" element={<ProductoDetalle />} />
             <Route path="categorias" element={<Navigate to="/categorias/laptops%20gamers" replace />} />
             <Route path="categorias/:nombreCategoria" element={<Categorias />} />
+            <Route path="SCategorias" element={<SCategorias />} />
           </Route>
 
           {/* Ruta catch-all */}

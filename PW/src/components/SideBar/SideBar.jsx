@@ -14,9 +14,10 @@ export default function SideBar() {
       <nav className="mt-10">
         <ul className="flex flex-col gap-3">
           <li className={`py-2 px-4 ${window.location.pathname == "/admin/listUsers" ? 'bg-teal-600' : 'hover:bg-teal-400'} rounded-lg hover:cursor-pointer`}><Link className="block text-white w-full" style={{textDecoration:'none'}} to="/admin/listUsers">Usuarios</Link></li>
-          <li className={`py-2 px-4 ${window.location.pathname == "/admin/listOrders" ? 'bg-teal-600' : 'hover:bg-teal-400'} rounded-lg hover:cursor-pointer`}><Link className="block text-white w-100%" style={{textDecoration:'none'}} to="/admin/listOrders">Órdenes</Link></li>
-          <li className={`py-2 px-4 ${window.location.pathname == "/admin/createProduct" ? 'bg-teal-600' : 'hover:bg-teal-400'} rounded-lg hover:cursor-pointer`}><Link className="block text-white w-100%" style={{textDecoration:'none'}} to="/admin/createProduct">Crear Producto</Link></li>
-          <li className={`py-2 px-4 ${window.location.pathname == "/admin/listProducts" ? 'bg-teal-600' : 'hover:bg-teal-400'} rounded-lg hover:cursor-pointer`}><Link className="block text-white w-100%" style={{textDecoration:'none'}} to="/admin/listProducts">Lista de Productos</Link></li>
+          <li className={`py-2 px-4 ${window.location.pathname == "/admin/listOrders" ? 'bg-teal-600' : 'hover:bg-teal-500'} rounded-lg hover:cursor-pointer`}><Link className="block text-white w-full" style={{textDecoration:'none'}} to="/admin/listOrders">Órdenes</Link></li>
+          <li className={`py-2 px-4 ${window.location.pathname == "/admin/createProduct" ? 'bg-teal-600' : 'hover:bg-teal-500'} rounded-lg hover:cursor-pointer`}><Link className="block text-white w-full" style={{textDecoration:'none'}} to="/admin/createProduct">Crear Producto</Link></li>
+          <li className={`py-2 px-4 ${window.location.pathname == "/admin/listProducts" ? 'bg-teal-600' : 'hover:bg-teal-400'} rounded-lg hover:cursor-pointer`}><Link className="block text-white w-full" style={{textDecoration:'none'}} to="/admin/listProducts">Lista de Productos</Link></li>
+          <li className={`py-2 px-4 ${window.location.pathname == "/admin/categorias" ? 'bg-teal-600' : 'hover:bg-teal-400'} rounded-lg hover:cursor-pointer`}><Link className="block text-white w-full" style={{textDecoration:'none'}} to="/admin/categorias">Categorias</Link></li>
         </ul>
       </nav>
       <div className="mt-auto p-4 grid grid-cols-[3fr_1fr]">

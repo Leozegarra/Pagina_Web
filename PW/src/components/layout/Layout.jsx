@@ -21,13 +21,14 @@ const Layout = () => {
                             <img src="./images/logoTech.jpeg" className="logo-header" width="150" height="60" />
                         </Link>
                         {/* Barra de Búsqueda */}
-                        <SearchBar />
+
+                        <SearchBar/>
                     </div>
 
                     <nav>
                         <ul>
                         <li><Link to="/">Inicio</Link></li>
-                        <li><Link to="/categorias">Categorías</Link></li>
+                        <li><Link to="/SCategorias">Productos</Link></li>
                         <li><Link to="/login">Iniciar Sesión</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/cart"> Carrito ({cart.length})</Link></li>
                         </ul>

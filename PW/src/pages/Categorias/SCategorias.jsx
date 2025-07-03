@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react"
-import productosOriginales from "../../contexts/ProductosJSON"
-import { useCart } from "../../contexts/CartContext"
-import { useNavigate } from "react-router-dom"
+import React, { useEffect, useState } from "react";
+import productosOriginales from "../../contexts/ProductosJSON";
+import { useCart } from "../../contexts/CartContext";
 
 const obtenerProductos = () => {
   const actualizados = JSON.parse(localStorage.getItem("productosActualizados"));
@@ -9,46 +8,70 @@ const obtenerProductos = () => {
 };
 
 const obtenerCategoriasBase = (productos) => {
-  return [...new Set(productos.map((p) => p.categoria))]
+  return [...new Set(productos.map((p) => p.categoria))];
 };
 
-function App() {
-  const productos = obtenerProductos()
-  const categoriasBase = obtenerCategoriasBase(productos)
-  const [categorias, setCategorias] = useState([])
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("")
-  const [modalAbierto, setModalAbierto] = useState(false)
-  const [productoModal, setProductoModal] = useState(null)
-  const navigate = useNavigate()
-  const { addToCart } = useCart()
+function SCategorias() {
+  const productos = obtenerProductos();
+  // Extraer categorías base de los productos
+  const categoriasBase = obtenerCategoriasBase(productos);
+  const [categorias, setCategorias] = useState([]);
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [productoModal, setProductoModal] = useState(null);
+  const { addToCart } = useCart();
 
-  // Cargar categorías combinadas al iniciar
   useEffect(() => {
-    const extras = JSON.parse(localStorage.getItem("categoriasExtra")) || []
-    const todas = [...new Set([...categoriasBase, ...extras])]
-    setCategorias(todas)
-    setCategoriaSeleccionada(todas[0])
-  }, [])
+    const extras = JSON.parse(localStorage.getItem("categoriasExtra")) || [];
+    const todas = [...new Set([...categoriasBase, ...extras])];
+    setCategorias(todas);
+    setCategoriaSeleccionada(todas[0]);
+  }, []);
 
   const productosFiltrados = productos.filter(
     (p) => p.categoria === categoriaSeleccionada
-  )
+  );
 
   const abrirModal = (producto) => {
-    setProductoModal(producto)
-    setModalAbierto(true)
-  }
+    setProductoModal(producto);
+    setModalAbierto(true);
+  };
 
   const cerrarModal = () => {
-    setModalAbierto(false)
-    setProductoModal(null)
-  }
+    setModalAbierto(false);
+    setProductoModal(null);
+  };
+
+  const registrarCompra = (producto) => {
+    const user = JSON.parse(localStorage.getItem("loggedUser"));
+    if (!user) {
+      alert("Debes iniciar sesión para comprar.");
+      return;
+    }
+
+    // Guardar producto en compras del usuario
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    const updatedUsers = users.map(u => {
+      if (u.id === user.id) {
+        const updatedUser = {
+          ...u,
+          purchases: [...(u.purchases || []), producto],
+        };
+        localStorage.setItem("loggedUser", JSON.stringify(updatedUser));
+        return updatedUser;
+      }
+      return u;
+    });
+
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
+  };
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
-      {/* Panel lateral de categorías */}
+      {/* Panel lateral */}
       <div style={{ width: "200px", borderRight: "1px solid #ccc", padding: 20 }}>
-        <h3 style={{color : "white"}}>Categorías</h3>
+        <h3 style={{ color: "white" }}>Categorías</h3>
         <ul style={{ listStyle: "none", padding: 0 }}>
           {categorias.map((cat) => (
             <li
@@ -66,43 +89,9 @@ function App() {
             </li>
           ))}
         </ul>
-
-        {/*Boton Gestor*/}
-        <button
-          onClick={() => navigate("/admin/gestorCategorias")}
-          style={{
-            marginTop: 20,
-            padding: "10px 15px",
-            background: "#007bff",
-            color: "#fff",
-            border: "none",
-            borderRadius: 5,
-            cursor: "pointer"
-          }}
-        >
-          Gestionar Categorías
-        </button>
-
-        {/* Botón para regresar a sidebar */}
-        <button
-          onClick={() => navigate("/admin/listOrders")}
-          style={{
-            marginTop: 20,
-            padding: "10px 15px",
-            background: "#007bff",
-            color: "#fff",
-            border: "none",
-            borderRadius: 5,
-            cursor: "pointer"
-          }}
-        >
-          Regresar
-        </button>
-
       </div>
 
-      {/* Productos filtrados */}
-
+      {/* Productos */}
       <div style={{ flex: 1, padding: 20, display: "flex", flexWrap: "wrap", gap: 20 }}>
         {productosFiltrados.map((producto) => (
           <div
@@ -124,8 +113,7 @@ function App() {
         )}
       </div>
 
-      {/* Modal de producto */}
-
+      {/* Modal */}
       {modalAbierto && productoModal && (
         <div
           onClick={cerrarModal}
@@ -139,7 +127,7 @@ function App() {
           }}
         >
           <div
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
             style={{
               background: "#fff",
               padding: 30,
@@ -159,8 +147,9 @@ function App() {
             </p>
             <button
               onClick={() => {
-                addToCart(productoModal)
-                cerrarModal()
+                addToCart(productoModal);
+                registrarCompra(productoModal);
+                cerrarModal();
               }}
               style={{
                 background: "#007bff",
@@ -177,7 +166,7 @@ function App() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default App
+export default SCategorias;
