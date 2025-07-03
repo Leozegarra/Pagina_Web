@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from "react";
-import productos from "./ProductosJSON"; // Asegúrate que esta ruta es correcta
+import productos from "./ProductosJSON";
 
 const CategoriaContext = createContext();
 
