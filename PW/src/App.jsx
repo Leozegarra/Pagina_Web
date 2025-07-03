@@ -31,6 +31,7 @@ function App() {
       <CategoriaProvider>
         <Routes>
           {/* Rutas Admin */}
+    
           <Route path="/admin/listUsers" element={<ListUsers />} />
           <Route path="/admin/listOrders" element={<ListOrders />} />
           <Route path="/admin/listProducts" element={<ListProducts />} />

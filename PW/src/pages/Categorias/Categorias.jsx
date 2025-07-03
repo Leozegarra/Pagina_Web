@@ -102,6 +102,7 @@ function App() {
       </div>
 
       {/* Productos filtrados */}
+
       <div style={{ flex: 1, padding: 20, display: "flex", flexWrap: "wrap", gap: 20 }}>
         {productosFiltrados.map((producto) => (
           <div
@@ -124,6 +125,7 @@ function App() {
       </div>
 
       {/* Modal de producto */}
+
       {modalAbierto && productoModal && (
         <div
           onClick={cerrarModal}

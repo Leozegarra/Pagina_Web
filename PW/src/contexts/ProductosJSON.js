@@ -72,8 +72,8 @@ const productos = [
     descripcion: "Computadora básica ideal para tareas escolares, navegación y trabajo en oficina ligera."
   },
 
-
   //Consola de Videojuegos
+  
   {
     id: 10,
     name: "PlayStation 5",

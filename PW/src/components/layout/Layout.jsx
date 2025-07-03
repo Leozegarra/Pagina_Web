@@ -21,6 +21,7 @@ const Layout = () => {
                             <img src="./images/logoTech.jpeg" className="logo-header" width="150" height="60" />
                         </Link>
                         {/* Barra de Búsqueda */}
+
                         <SearchBar/>
                     </div>
 
