@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ProductTable from "./components/ProductsTable";
 import DashboardHeader from "../../components/DashboardHeader/DashBoardHeader";
 import Sidebar from "../../components/SideBar/SideBar";
+<<<<<<< HEAD
 
 const initialProducts = [
   {
@@ -32,6 +33,9 @@ const initialProducts = [
     image: "https://via.placeholder.com/150"
   }
 ];
+=======
+import productos from '../../contexts/ProductosJSON';
+>>>>>>> 098cf79 (Cambios en el carrito)
 
 const STORAGE_KEY = 'products_data';
 
@@ -39,10 +43,17 @@ const ListProducts = () => {
   const [products, setProducts] = useState(() => {
     try {
       const savedProducts = localStorage.getItem(STORAGE_KEY);
+<<<<<<< HEAD
       return savedProducts ? JSON.parse(savedProducts) : initialProducts;
     } catch (error) {
       console.error('Error al cargar productos:', error);
       return initialProducts;
+=======
+      return savedProducts ? JSON.parse(savedProducts) : productos;
+    } catch (error) {
+      console.error('Error al cargar productos:', error);
+      return productos;
+>>>>>>> 098cf79 (Cambios en el carrito)
     }
   });
   const deleteProduct = (id) => {
@@ -51,7 +62,10 @@ const ListProducts = () => {
     const updated = products.filter(p => p.id !== id);
     setProducts(updated); 
   };
+<<<<<<< HEAD
 
+=======
+>>>>>>> 098cf79 (Cambios en el carrito)
   const editProduct = (updatedProduct) => {
     const updated = products.map(p => (p.id === updatedProduct.id ? updatedProduct : p));
     setProducts(updated);
