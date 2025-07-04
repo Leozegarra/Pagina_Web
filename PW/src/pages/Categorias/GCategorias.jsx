@@ -91,80 +91,78 @@ const GestorCategorias = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h3>Gestor de Categorías</h3>
-
-      <button className="btn btn-secondary mb-3 me-2" onClick={() => navigate('/admin/categorias')}>
-        Volver
-      </button>
-
-      <button className="btn btn-primary mb-3" onClick={abrirModal}>
-        + Agregar categoría
-      </button>
-
-      {/* Lista de categorías con botón de borrar solo para extras */}
-      <ul className="list-group">
-        {categorias.map((cat, idx) => {
-          const esCategoriaBase = categoriasBase.includes(cat);
-
-          return (
-            <li key={idx} className="list-group-item d-flex justify-content-between align-items-center">
-              <span>{cat}</span>
-              {!esCategoriaBase && (
-                <button className="btn btn-sm btn-danger" onClick={() => borrarCategoria(cat)}>
-                  Borrar
-                </button>
-              )}
-            </li>
-          );
-        })}
-      </ul>
-
+    <div className="max-w-3xl mx-auto py-10 px-4">
+      <div className="bg-white rounded-2xl shadow-md p-8 mb-8 border border-gray-100">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+            <svg className="w-6 h-6 text-teal-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path strokeLinecap="round" strokeLinejoin="round" d="M8 12h8M12 8v8" /></svg>
+            Gestor de Categorías
+          </h3>
+          <div className="flex gap-2">
+            <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-2 rounded-full shadow-sm text-sm transition-all border border-gray-200" onClick={() => navigate('/admin/categorias')}>
+              Volver
+            </button>
+            <button className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-5 py-2 rounded-full shadow-sm text-sm transition-all" onClick={abrirModal}>
+              + Agregar categoría
+            </button>
+          </div>
+        </div>
+        <ul className="divide-y divide-gray-100 rounded-xl overflow-hidden bg-white border border-gray-100">
+          {categorias.map((cat, idx) => {
+            const esCategoriaBase = categoriasBase.includes(cat);
+            return (
+              <li key={idx} className="flex items-center justify-between px-5 py-3 hover:bg-gray-50 transition-all text-sm">
+                <span className="font-medium text-gray-700">{cat}</span>
+                {!esCategoriaBase && (
+                  <button className="bg-red-50 hover:bg-red-100 text-red-500 font-bold px-4 py-1 rounded-full text-xs shadow-sm transition-all border border-red-100" onClick={() => borrarCategoria(cat)}>
+                    Borrar
+                  </button>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
       {/* Modal para agregar nueva categoría */}
       {mostrarModal && (
-        <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
-          <div className="modal-dialog modal-lg">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Nueva Categoría</h5>
-                <button type="button" className="btn-close" onClick={cerrarModal}></button>
-              </div>
-              <div className="modal-body">
-                <input
-                  type="text"
-                  className="form-control mb-3"
-                  placeholder="Nombre de la nueva categoría"
-                  value={nombreCategoria}
-                  onChange={(e) => setNombreCategoria(e.target.value)}
-                />
-
-                <h6>Selecciona productos para esta categoría:</h6>
-                <div className="row">
-                  {productos.map((producto) => (
-                    <div className="col-md-4 mb-3" key={producto.id}>
-                      <div
-                        className={`card ${productosSeleccionados.includes(producto.id) ? 'border-primary' : ''}`}
-                        onClick={() => toggleProducto(producto.id)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <img src={producto.imagen} className="card-img-top" alt={producto.name} />
-                        <div className="card-body">
-                          <h6 className="card-title">{producto.name}</h6>
-                          <p className="card-text"><small className="text-muted">{producto.categoria}</small></p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-2xl border border-gray-100">
+            <div className="flex items-center justify-between mb-6">
+              <h5 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                <svg className="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path strokeLinecap="round" strokeLinejoin="round" d="M8 12h8M12 8v8" /></svg>
+                Nueva Categoría
+              </h5>
+              <button type="button" className="bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-full p-2 shadow-sm" onClick={cerrarModal}>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <input
+              type="text"
+              className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 shadow-sm text-gray-800 placeholder-gray-400 bg-white transition-all outline-none mb-4 text-sm"
+              placeholder="Nombre de la nueva categoría"
+              value={nombreCategoria}
+              onChange={(e) => setNombreCategoria(e.target.value)}
+            />
+            <h6 className="text-sm font-semibold text-gray-700 mb-2">Selecciona productos para esta categoría:</h6>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-64 overflow-y-auto mb-4">
+              {productos.map((producto) => (
+                <div
+                  key={producto.id}
+                  className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer shadow-sm bg-gray-50 hover:bg-teal-50 ${productosSeleccionados.includes(producto.id) ? 'border-teal-400 ring-2 ring-teal-100' : 'border-gray-200'}`}
+                  onClick={() => toggleProducto(producto.id)}
+                >
+                  <img src={producto.imagen} className="w-10 h-10 rounded-lg object-contain bg-white border border-gray-100" alt={producto.name} />
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-gray-800 text-sm">{producto.name}</span>
+                    <span className="text-xs text-gray-400">{producto.categoria}</span>
+                  </div>
                 </div>
-              </div>
-              <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={cerrarModal}>Cancelar</button>
-                <button className="btn btn-success" onClick={guardarCategoria}>Guardar categoría</button>
-                <button className="btn btn-warning mt-3" onClick={() => { localStorage.removeItem("productosActualizados");
-                                                                          localStorage.removeItem("categoriasExtra");
-                                                                          window.location.reload();
-                                                                        }}>Limpiar cambios (reset)</button>
-              </div>
+              ))}
+            </div>
+            <div className="flex flex-col md:flex-row gap-2 justify-end mt-6">
+              <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-2 rounded-full shadow-sm text-sm transition-all border border-gray-200" onClick={cerrarModal}>Cancelar</button>
+              <button className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-5 py-2 rounded-full shadow-sm text-sm transition-all" onClick={guardarCategoria}>Guardar categoría</button>
+              <button className="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 font-semibold px-4 py-2 rounded-full shadow-sm text-sm transition-all border border-yellow-200" onClick={() => { localStorage.removeItem("productosActualizados"); localStorage.removeItem("categoriasExtra"); window.location.reload(); }}>Limpiar cambios (reset)</button>
             </div>
           </div>
         </div>

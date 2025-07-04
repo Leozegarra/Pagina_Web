@@ -11,7 +11,7 @@ export const initialData = {
     {
       id: 1,
       name: "Juan Pérez",
-      email: "juanperez@example.com",
+      email: "admin@example.com",
       role: "Usuario",
       status: "Activo",
       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop"
@@ -301,3 +301,35 @@ export const localStorageService = {
 };
 
 localStorageService.initializeData(); 
+
+// Asegurar que el admin tenga contraseña
+(function ensureAdminPassword() {
+  const key = STORAGE_KEYS.USERS;
+  let users = JSON.parse(localStorage.getItem(key)) || [];
+  let changed = false;
+  users = users.map(user => {
+    if (user.email === 'admin@example.com') {
+      if (user.password !== '123456') {
+        changed = true;
+        return { ...user, password: '123456' };
+      }
+    }
+    return user;
+  });
+  // Si no existe, lo agrega
+  if (!users.some(u => u.email === 'admin@example.com')) {
+    users.push({
+      id: Date.now(),
+      name: 'Administrador',
+      email: 'admin@example.com',
+      role: 'Usuario',
+      status: 'Activo',
+      avatar: '',
+      password: '123456'
+    });
+    changed = true;
+  }
+  if (changed) {
+    localStorage.setItem(key, JSON.stringify(users));
+  }
+})(); 

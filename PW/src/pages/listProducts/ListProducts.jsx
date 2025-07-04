@@ -30,11 +30,12 @@ const ListProducts = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredProducts = products.filter(product => {
+    console.log(product.category);
     const searchLower = searchTerm.toLowerCase();
     return (
       product.name.toLowerCase().includes(searchLower) ||
-      product.category.toLowerCase().includes(searchLower) ||
-      product.description.toLowerCase().includes(searchLower)
+      product.categoria.toLowerCase().includes(searchLower) ||
+      product.descripcion.toLowerCase().includes(searchLower)
     );
   });
 
