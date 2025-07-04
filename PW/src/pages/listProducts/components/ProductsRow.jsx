@@ -6,7 +6,7 @@ const ProductsRow = ({ product, onDelete }) => {
   const { id, image, name, category, description, stock, imagen, nombre, categoria, descripcion } = product;
 
   const handleRowClick = () => {
-    navigate(`/admin/products/${id}`);
+    navigate(`/admin/detailProduct/${id}`);
   };
 
   return (

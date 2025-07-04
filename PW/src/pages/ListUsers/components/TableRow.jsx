@@ -7,7 +7,7 @@ export default function TableRow({ user, index, setUsers }) {
   const navigate = useNavigate();
 
   const handleRowClick = () => {
-    navigate(`/admin/users/${user.id}`);
+    navigate(`/admin/detailUser/${user.id}`);
   };
 
   const handleUser = (e) => {

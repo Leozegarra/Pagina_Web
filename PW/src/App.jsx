@@ -54,8 +54,11 @@ function App() {
             <Route path="/recover" element={<Recover />} />
             {/* Rutas Admin protegidas */}
             <Route path="/admin/listUsers" element={<PrivateAdminRoute element={<ListUsers />} />} />
+            <Route path="/admin/detailUser/:id" element={<PrivateAdminRoute element={<DetailUser />} />} />
             <Route path="/admin/listOrders" element={<PrivateAdminRoute element={<ListOrders />} />} />
+            <Route path="/admin/orders/:id" element={<PrivateAdminRoute element={<DetailOrder />} />} />
             <Route path="/admin/listProducts" element={<PrivateAdminRoute element={<ListProducts />} />} />
+            <Route path="/admin/detailProduct/:id" element={<PrivateAdminRoute element={<DetailProduct />} />} />
             <Route path="/admin/createProduct" element={<PrivateAdminRoute element={<CreateProduct />} />} />
             <Route path="/admin/categorias" element={<PrivateAdminRoute element={<Categorias />} />} />
             <Route path="/admin/gestorCategorias" element={<PrivateAdminRoute element={<GestorCategorias />} />} />
