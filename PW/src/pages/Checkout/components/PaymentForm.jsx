@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../../../contexts/CartContext'
+import { localStorageService, STORAGE_KEYS } from '../../../services/localStorage'
 
 const PaymentForm = () => {
   const navigate = useNavigate()
-  const { clearCart } = useCart()
+  const { cart, clearCart } = useCart()
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -12,17 +14,48 @@ const PaymentForm = () => {
     cardNumber: ''
   })
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    clearCart()
-    navigate('/order-complete')
-  }
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     })
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    const usuarioActual = JSON.parse(localStorage.getItem("usuario_actual"))
+    if (!usuarioActual) {
+      alert("Debes iniciar sesión para completar la compra.")
+      return
+    }
+
+    if (cart.length === 0) {
+      alert("Tu carrito está vacío.")
+      return
+    }
+
+    // Crear nueva orden
+    const nuevaOrden = {
+      id: Date.now(),
+      email: usuarioActual.email,
+      fecha: new Date().toLocaleDateString(),
+      items: cart.map(item => ({
+        id: item.id,
+        nombre: item.name,
+        precio: item.price,
+        cantidad: item.quantity || 1
+      }))
+    }
+
+    // Guardar orden en localStorage
+    const ordenes = localStorageService.getData(STORAGE_KEYS.ORDERS)
+    ordenes.push(nuevaOrden)
+    localStorageService.saveData(STORAGE_KEYS.ORDERS, ordenes)
+
+    clearCart()
+    alert("Compra realizada con éxito.")
+    navigate('/order-complete')
   }
 
   return (
@@ -87,4 +120,4 @@ const PaymentForm = () => {
   )
 }
 
-export default PaymentForm 
+export default PaymentForm
