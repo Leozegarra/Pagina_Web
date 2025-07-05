@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import productosOriginales from "../../contexts/ProductosJSON";
 import { useCart } from "../../contexts/CartContext";
+import { useParams } from "react-router-dom";
 
 const obtenerProductos = () => {
   const actualizados = JSON.parse(localStorage.getItem("productosActualizados"));
@@ -12,6 +13,7 @@ const obtenerCategoriasBase = (productos) => {
 };
 
 function SCategorias() {
+  const { nombreCategoria } = useParams();
   const productos = obtenerProductos();
   const categoriasBase = obtenerCategoriasBase(productos);
   const [categorias, setCategorias] = useState([]);
@@ -24,8 +26,14 @@ function SCategorias() {
     const extras = JSON.parse(localStorage.getItem("categoriasExtra")) || [];
     const todas = [...new Set([...categoriasBase, ...extras])];
     setCategorias(todas);
-    setCategoriaSeleccionada(todas[0]);
-  }, []);
+
+    const categoriaUrl = decodeURIComponent(nombreCategoria || ""); //decodeURIComponent para manejar espacios y caracteres especiales
+    if (todas.includes(categoriaUrl)) {
+      setCategoriaSeleccionada(categoriaUrl);
+    } else {
+      setCategoriaSeleccionada(todas[0]); // Si no existe, selecciona la primera categoría
+    }
+  }, [nombreCategoria]);
 
   const productosFiltrados = productos.filter(
     (p) => p.categoria === categoriaSeleccionada

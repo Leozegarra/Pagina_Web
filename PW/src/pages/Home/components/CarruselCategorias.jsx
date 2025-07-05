@@ -1,12 +1,13 @@
 import React from "react";
 import Slider from "react-slick";
 import { useCategorias } from "../../../contexts/CategoriaContexto";
-import { Link } from "react-router-dom";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { useNavigate } from "react-router-dom";
 
 export default function CarruselCategorias() {
   const { categorias } = useCategorias();
+  const navigate = useNavigate();
 
   const settings = {
     dots: false,
@@ -47,13 +48,12 @@ export default function CarruselCategorias() {
               />
             </div>
             <h3 className="text-teal-800 font-extrabold text-2xl text-center mt-2 drop-shadow">{cat.nombre}</h3>
-            <Link
-              to={`/categorias/${encodeURIComponent(cat.nombre)}`}
+            <button
+              onClick={() => navigate(`/categorias/${cat.nombre}`)}
               className="mt-2 px-5 py-2 bg-teal-500 hover:bg-teal-700 text-white rounded-full font-semibold shadow transition-all text-base"
-              onClick={(e) => e.stopPropagation()}
             >
               Ver productos
-            </Link>
+            </button>
           </div>
         ))}
       </Slider>

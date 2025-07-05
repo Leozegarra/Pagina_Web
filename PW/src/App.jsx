@@ -72,6 +72,7 @@ function App() {
               {/* <Route path="categorias" element={<Navigate to="/categorias/laptops%20gamers" replace />} />
               <Route path="categorias/:nombreCategoria" element={<Categorias />} /> */}
               <Route path="SCategorias" element={<SCategorias />} />
+              <Route path="categorias/:nombreCategoria" element={<SCategorias />} />
               <Route path="cuenta" element={<Cuenta />} />
             </Route>
             {/* Ruta catch-all */}
