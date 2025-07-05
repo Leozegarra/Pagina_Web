@@ -9,7 +9,8 @@ const Cuenta = () => {
   const [vista, setVista] = useState("ordenes");
 
   useEffect(() => {
-    const userStorage = localStorage.getItem("usuario_actual");
+    const userStorage =
+      localStorage.getItem("loggedUser") || localStorage.getItem("usuario_actual");
     if (!userStorage) {
       navigate("/login");
       return;
@@ -31,6 +32,59 @@ const Cuenta = () => {
     window.location.reload();
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUsuario((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleGuardarContrasena = () => {
+    const { oldPassword, newPassword, confirmPassword } = usuario;
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      alert("Completa todos los campos");
+      return;
+    }
+
+    if (!usuario.password) {
+      alert("No se puede validar la contraseña actual. El usuario no tiene contraseña registrada.");
+      return;
+    }
+
+    if (oldPassword !== usuario.password) {
+      alert("La contraseña actual es incorrecta");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      alert("Las contraseñas nuevas no coinciden");
+      return;
+    }
+
+    const usuarios = localStorageService.getData(STORAGE_KEYS.USERS);
+    const index = usuarios.findIndex((u) => u.email === usuario.email);
+
+    if (index !== -1) {
+      usuarios[index].password = newPassword;
+      localStorageService.saveData(STORAGE_KEYS.USERS, usuarios);
+
+      const updatedUser = {
+        ...usuario,
+        password: newPassword,
+      };
+      // Eliminar campos temporales
+      delete updatedUser.oldPassword;
+      delete updatedUser.newPassword;
+      delete updatedUser.confirmPassword;
+
+      localStorage.setItem("usuario_actual", JSON.stringify(updatedUser));
+      setUsuario(updatedUser);
+
+      alert("Contraseña actualizada correctamente");
+    } else {
+      alert("Error al actualizar la contraseña");
+    }
+  };
+
   if (!usuario) return null;
 
   return (
@@ -42,7 +96,7 @@ const Cuenta = () => {
         <div className="col-md-3 mb-4">
           <div className="card text-center">
             <img
-              src={usuario.avatar}
+              src={usuario.avatar || "https://via.placeholder.com/300x200.png?text=Avatar"}
               alt="Avatar"
               className="card-img-top"
               style={{ height: "200px", objectFit: "cover" }}
@@ -126,10 +180,18 @@ const Cuenta = () => {
             <>
               <h4>Datos del Usuario</h4>
               <ul className="list-group mt-3">
-                <li className="list-group-item"><strong>Nombre:</strong> {usuario.name}</li>
-                <li className="list-group-item"><strong>Email:</strong> {usuario.email}</li>
-                <li className="list-group-item"><strong>Rol:</strong> {usuario.role}</li>
-                <li className="list-group-item"><strong>Estado:</strong> {usuario.status}</li>
+                <li className="list-group-item">
+                  <strong>Nombre:</strong> {usuario.name}
+                </li>
+                <li className="list-group-item">
+                  <strong>Email:</strong> {usuario.email}
+                </li>
+                <li className="list-group-item">
+                  <strong>Rol:</strong> {usuario.role}
+                </li>
+                <li className="list-group-item">
+                  <strong>Estado:</strong> {usuario.status}
+                </li>
               </ul>
             </>
           )}
@@ -140,20 +202,31 @@ const Cuenta = () => {
               <div className="mt-3">
                 <input
                   type="password"
+                  name="oldPassword"
                   placeholder="Contraseña actual"
                   className="form-control mb-2"
+                  value={usuario.oldPassword || ""}
+                  onChange={handleInputChange}
                 />
                 <input
                   type="password"
+                  name="newPassword"
                   placeholder="Nueva contraseña"
                   className="form-control mb-2"
+                  value={usuario.newPassword || ""}
+                  onChange={handleInputChange}
                 />
                 <input
                   type="password"
+                  name="confirmPassword"
                   placeholder="Confirmar nueva contraseña"
                   className="form-control mb-3"
+                  value={usuario.confirmPassword || ""}
+                  onChange={handleInputChange}
                 />
-                <button className="btn btn-success">Guardar contraseña</button>
+                <button className="btn btn-success" onClick={handleGuardarContrasena}>
+                  Guardar contraseña
+                </button>
               </div>
             </>
           )}

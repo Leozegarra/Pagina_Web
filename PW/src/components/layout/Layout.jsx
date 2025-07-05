@@ -4,6 +4,7 @@ import { useCart } from "../../contexts/CartContext";
 import SearchBar from "../SearchBar/SearchBar";
 import productos from "../../contexts/ProductosJSON";
 import UserStatus from "../UserStatus/UserStatus";
+import { useUser } from "../../contexts/UserContext";
 
 const socialLinks = [
   {
@@ -167,6 +168,7 @@ const navIcons = {
 
 const Layout = () => {
   const { cart } = useCart();
+  const { user } = useUser();
   const location = useLocation();
   const categoriasUnicas = Array.from(
     new Set(productos.map((p) => p.categoria))
@@ -239,6 +241,23 @@ const Layout = () => {
                 </span>
               </Link>
             </li>
+            {user && (
+              <li>
+                <Link
+                  to="/cuenta"
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-150 relative group ${
+                    location.pathname === "/cuenta"
+                      ? "bg-teal-600 text-white shadow"
+                      : "hover:bg-teal-100 text-teal-700"
+                  }`}
+                >
+                  {navIcons.account}
+                  <span className="after:block after:absolute after:left-0 after:-bottom-1 after:w-full after:h-0.5 after:bg-teal-600 after:scale-x-0 group-hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left">
+                     Mi Cuenta
+                  </span>
+                </Link>
+              </li>
+            )}
           </ul>
         </nav>
       </header>
