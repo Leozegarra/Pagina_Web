@@ -13,8 +13,14 @@ export const CartProvider = ({ children }) => {
     setCart([...cart, product])
   }
 
+  // Nueva lógica: solo elimina una unidad del producto
   const removeFromCart = (productId) => {
-    setCart(cart.filter(item => item.id !== productId))
+    const idx = cart.findIndex(item => item.id === productId);
+    if (idx !== -1) {
+      const newCart = [...cart];
+      newCart.splice(idx, 1);
+      setCart(newCart);
+    }
   }
 
   const clearCart = () => {

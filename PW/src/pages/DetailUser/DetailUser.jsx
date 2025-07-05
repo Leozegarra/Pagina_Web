@@ -51,112 +51,100 @@ const DetailUser = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-white to-teal-50">
       <SideBar />
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-8 md:p-12">
         <DashboardHeader title="Detalle de Usuario" />
-        
         <div className="mt-12 max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
             {/* User Profile Card */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg shadow p-6">
-                <div className="text-center">
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="w-32 h-32 rounded-full mx-auto border-4 border-blue-100"
-                  />
-                  <h2 className="mt-4 text-2xl font-bold text-gray-800">{user.name}</h2>
-                  <p className="text-gray-600 mt-1">{user.email}</p>
-                  <div className="mt-4">
-                    <span className={`px-4 py-2 rounded-full text-sm font-medium ${
-                      user.status === 'Activo' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {user.status}
-                    </span>
+              <div className="bg-white rounded-2xl shadow-xl p-8 flex flex-col items-center">
+                <div className="text-center w-full flex flex-col items-center">
+                  <div className="w-36 h-36 rounded-full border-4 border-teal-200 shadow-lg overflow-hidden mb-4 flex items-center justify-center bg-gray-50">
+                    <img
+                      src={user.avatar}
+                      alt={user.name}
+                      className="w-32 h-32 object-cover"
+                    />
                   </div>
-                  <div className="mt-6 space-y-3">
-                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <span className="text-gray-600">Rol</span>
-                      <span className="font-medium text-gray-800">{user.role}</span>
+                  <h2 className="mt-2 text-3xl font-extrabold text-gray-800 tracking-tight">{user.name}</h2>
+                  <p className="text-teal-600 text-lg font-semibold mt-1">{user.email}</p>
+                  <div className="mt-4 flex items-center justify-center gap-2">
+                    {user.status === 'Activo' ? (
+                      <span className="inline-flex items-center gap-1 px-4 py-2 rounded-full text-sm font-bold bg-green-100 text-green-700 border border-green-200">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        Activo
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-4 py-2 rounded-full text-sm font-bold bg-red-100 text-red-700 border border-red-200">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                        Inactivo
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-8 space-y-3 w-full">
+                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+                      <span className="text-gray-500 font-medium">Rol</span>
+                      <span className="font-bold text-gray-800">{user.role}</span>
                     </div>
-                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <span className="text-gray-600">Total Órdenes</span>
-                      <span className="font-medium text-gray-800">{userOrders.length}</span>
+                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+                      <span className="text-gray-500 font-medium">Total Órdenes</span>
+                      <span className="font-bold text-gray-800">{userOrders.length}</span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-
             {/* Orders List */}
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-lg shadow">
-                <div className="p-6 border-b border-gray-200">
-                  <h3 className="text-xl font-semibold text-gray-800">Órdenes Recientes</h3>
+              <div className="bg-white rounded-2xl shadow-xl">
+                <div className="p-8 border-b border-gray-100 flex items-center gap-3">
+                  <svg className="w-7 h-7 text-teal-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M3 12h18M3 17h18" /></svg>
+                  <h3 className="text-2xl font-extrabold text-gray-800">Órdenes Recientes</h3>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                  <table className="min-w-full divide-y divide-gray-100">
+                    <thead className="bg-teal-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          ID
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Producto
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Fecha
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Estado
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Total
-                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-bold text-teal-700 uppercase tracking-wider">ID</th>
+                        <th className="px-6 py-4 text-left text-xs font-bold text-teal-700 uppercase tracking-wider">Producto</th>
+                        <th className="px-6 py-4 text-left text-xs font-bold text-teal-700 uppercase tracking-wider">Fecha</th>
+                        <th className="px-6 py-4 text-left text-xs font-bold text-teal-700 uppercase tracking-wider">Estado</th>
+                        <th className="px-6 py-4 text-left text-xs font-bold text-teal-700 uppercase tracking-wider">Total</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white divide-y divide-gray-100">
                       {userOrders.map((order) => (
-                        <tr 
+                        <tr
                           key={order.id}
-                          className="hover:bg-gray-50 cursor-pointer"
+                          className="hover:bg-teal-50/60 cursor-pointer transition-all h-16"
                           onClick={() => navigate(`/admin/orders/${order.id}`)}
                         >
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
-                            #{order.id}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {order.producto}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {order.fecha}
-                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-base font-bold text-blue-600">#{order.id}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-base text-gray-900">{order.producto}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-base text-gray-500">{order.fecha}</td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              order.estado === 'Entregado' 
-                                ? 'bg-green-100 text-green-800' 
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                              order.estado === 'Entregado'
+                                ? 'bg-green-100 text-green-700 border border-green-200'
                                 : order.estado === 'Cancelado'
-                                ? 'bg-red-100 text-red-800'
-                                : 'bg-yellow-100 text-yellow-800'
+                                ? 'bg-red-100 text-red-700 border border-red-200'
+                                : 'bg-yellow-100 text-yellow-700 border border-yellow-200'
                             }`}>
                               {order.estado}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            ${order.precio}
-                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-base font-extrabold text-teal-700">S/ {order.precio}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
                 {userOrders.length === 0 && (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500">No hay órdenes para mostrar</p>
+                  <div className="text-center py-12">
+                    <svg className="w-12 h-12 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h6" /></svg>
+                    <p className="text-gray-400 text-lg font-semibold">No hay órdenes para mostrar</p>
                   </div>
                 )}
               </div>

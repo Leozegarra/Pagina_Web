@@ -7,7 +7,7 @@ export default function TableRow({ user, index, setUsers }) {
   const navigate = useNavigate();
 
   const handleRowClick = () => {
-    navigate(`/admin/users/${user.id}`);
+    navigate(`/admin/detailUser/${user.id}`);
   };
 
   const handleUser = (e) => {
@@ -26,38 +26,38 @@ export default function TableRow({ user, index, setUsers }) {
 
   return (
     <tr
-      className="border-b hover:bg-gray-100 cursor-pointer transition-colors duration-150"
+      className="border-b hover:bg-gray-50 cursor-pointer transition-colors duration-150 text-xs h-12 rounded-lg shadow-sm bg-white"
       onClick={handleRowClick}
     >
-      <td className="p-2">{index}</td>
-      <td className="p-2">{user.id}</td>
-      <td className="p-2 flex items-center">
+      <td className="p-1 font-medium text-gray-300">{index}</td>
+      <td className="p-1 font-medium text-gray-300">{user.id}</td>
+      <td className="p-1 flex items-center gap-2">
         <img
           src={user.avatar}
           alt="Avatar"
-          className="w-8 h-8 rounded-full mr-2"
+          className="w-6 h-6 rounded-full border border-gray-200 shadow-sm"
         />
-        {user.name}
+        <span className="text-gray-700 font-medium">{user.name}</span>
       </td>
-      <td className="p-2">{user.email}</td>
-      <td className="p-2 flex items-center justify-start">
+      <td className="p-1 text-gray-400 font-normal">{user.email}</td>
+      <td className="p-1 flex items-center justify-start">
         <span
-          className={`px-2 py-1 rounded-full text-sm font-medium ${
+          className={`px-2 py-0.5 rounded-full text-[10px] font-semibold shadow-sm ${
             user.status === "Activo"
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
+              ? "bg-green-50 text-green-500 border border-green-100"
+              : "bg-gray-100 text-gray-400 border border-gray-200"
           }`}
         >
           {user.status}
         </span>
       </td>
-      <td className="p-2">
+      <td className="p-1">
         <button
-          className={`px-4 py-1 rounded-md w-40 ${
+          className={`px-3 py-0.5 rounded-full text-[11px] font-bold shadow-sm transition-colors duration-150 ${
             user.status === "Activo"
-              ? "bg-red-500 hover:bg-red-600"
-              : "bg-teal-500 hover:bg-teal-600"
-          } text-white transition-colors duration-150`}
+              ? "bg-red-50 hover:bg-red-100 text-red-500"
+              : "bg-green-50 hover:bg-green-100 text-green-500"
+          }`}
           onClick={handleUser}
         >
           {user.status === "Activo" ? "Desactivar" : "Activar"}

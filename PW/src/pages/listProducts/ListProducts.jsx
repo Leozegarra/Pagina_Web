@@ -2,36 +2,7 @@ import React, { useEffect, useState } from "react";
 import ProductTable from "./components/ProductsTable";
 import DashboardHeader from "../../components/DashboardHeader/DashBoardHeader";
 import Sidebar from "../../components/SideBar/SideBar";
-
-const initialProducts = [
-  {
-    id: 1000,
-    name: "Laptop HP",
-    category: "computadora",
-    presentation: "Caja",
-    description: "Laptop HP de última generación.",
-    stock: 15,
-    image: "https://via.placeholder.com/150"
-  },
-  {
-    id: 1001,
-    name: "Monitor Samsung",
-    category: "monitor",
-    presentation: "Caja",
-    description: "Monitor 27 pulgadas HD",
-    stock: 8,
-    image: "https://via.placeholder.com/150"
-  },
-  {
-    id: 1002,
-    name: "PlayStation 5",
-    category: "consola",
-    presentation: "Caja",
-    description: "Consola de videojuegos Sony",
-    stock: 4,
-    image: "https://via.placeholder.com/150"
-  }
-];
+import productos from '../../contexts/ProductosJSON';
 
 const STORAGE_KEY = 'products_data';
 
@@ -39,10 +10,10 @@ const ListProducts = () => {
   const [products, setProducts] = useState(() => {
     try {
       const savedProducts = localStorage.getItem(STORAGE_KEY);
-      return savedProducts ? JSON.parse(savedProducts) : initialProducts;
+      return savedProducts ? JSON.parse(savedProducts) : productos;
     } catch (error) {
       console.error('Error al cargar productos:', error);
-      return initialProducts;
+      return productos;
     }
   });
   const deleteProduct = (id) => {
@@ -51,7 +22,6 @@ const ListProducts = () => {
     const updated = products.filter(p => p.id !== id);
     setProducts(updated); 
   };
-
   const editProduct = (updatedProduct) => {
     const updated = products.map(p => (p.id === updatedProduct.id ? updatedProduct : p));
     setProducts(updated);
@@ -60,11 +30,12 @@ const ListProducts = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredProducts = products.filter(product => {
+    console.log(product.category);
     const searchLower = searchTerm.toLowerCase();
     return (
       product.name.toLowerCase().includes(searchLower) ||
-      product.category.toLowerCase().includes(searchLower) ||
-      product.description.toLowerCase().includes(searchLower)
+      product.categoria.toLowerCase().includes(searchLower) ||
+      product.descripcion.toLowerCase().includes(searchLower)
     );
   });
 
