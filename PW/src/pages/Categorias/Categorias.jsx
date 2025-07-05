@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import productosOriginales from "../../contexts/ProductosJSON";
 import { useCart } from "../../contexts/CartContext";
-// import { useNavigate } from "react-router-dom";
 import SideBar from '../../components/SideBar/SideBar';
 import DashboardHeader from '../../components/DashboardHeader/DashBoardHeader';
 
@@ -21,10 +20,8 @@ function App() {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
   const [modalAbierto, setModalAbierto] = useState(false);
   const [productoModal, setProductoModal] = useState(null);
-  // const navigate = useNavigate();
   const { addToCart } = useCart();
 
-  // Estado para el modal de gestión de categorías
   const [gestionarModal, setGestionarModal] = useState(false);
   const [nombreCategoria, setNombreCategoria] = useState("");
   const [productosSeleccionados, setProductosSeleccionados] = useState([]);

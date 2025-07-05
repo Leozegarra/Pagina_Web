@@ -6,6 +6,7 @@ export default function AgregarCategoria() {
   const [imagen, setImagen] = useState("");
   const { agregarCategoria } = useCategorias();
 
+  // Función para manejar el evento de agregar una categoría
   const handleAgregar = () => {
     if (name.trim() !== "" && imagen.trim() !== "") {
       agregarCategoria({ name: name.trim(), imagen: imagen.trim() });
