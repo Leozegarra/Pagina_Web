@@ -194,7 +194,6 @@ const DetailOrder = () => {
                   </div>
                 </div>
               </div>
-
               {/* Products List */}
               <div className="mt-8">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">
