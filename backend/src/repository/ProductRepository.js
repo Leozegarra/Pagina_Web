@@ -16,7 +16,9 @@ const ProductRepository = {
     });
   },
   async findAll() {
-    const products = await Producto.findAll();
+    const products = await Producto.findAll({
+      order: [['id', 'ASC']]
+    });
     const categorias = await Categoria.findAll();
 
     return products.map((p) => {
