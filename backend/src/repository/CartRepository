@@ -1,0 +1,23 @@
+const Cart = require('../domain/Cart');
+
+const CartRepository = {
+  async create(cartData) {
+    return await Cart.create(cartData);
+  },
+  async getByUserId(userId) {
+    return await Cart.findOne({ where: { userId } });
+  },
+  async update(userId, updatedData) {
+    const cart = await Cart.findOne({ where: { userId } });
+    if (!cart) return null;
+    return await cart.update(updatedData);
+  },
+  async remove(userId) {
+    const cart = await Cart.findOne({ where: { userId } });
+    if (!cart) return null;
+    await cart.destroy();
+    return true;
+  }
+};
+
+module.exports = CartRepository;

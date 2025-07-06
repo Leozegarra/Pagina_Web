@@ -1,50 +1,56 @@
-const { Producto, Categoria } = require('../db/models');
+const { Product, Category } = require('../db/models');
 const ProductEntity = require('../domain/Product');
 
 const ProductRepository = {
   async create(productData) {
-    return await Producto.create(productData);
+    return await Product.create(productData);
   },
+
   async findById(id) {
-    const product = await Producto.findByPk(id, {
-      include: [{ model: Categoria, as: 'categoria', attributes: ['nombre'] }]
+    const product = await Product.findByPk(id, {
+      include: [{ model: Category, as: 'category', attributes: ['name'] }]
     });
     if (!product) return null;
+
     return new ProductEntity({
       ...product.get(),
-      categoriaNombre: product.categoria ? product.categoria.nombre : null
+      categoryName: product.category ? product.category.name : null
     });
   },
+
   async findAll() {
-    const products = await Producto.findAll();
-    const categorias = await Categoria.findAll();
+    const products = await Product.findAll();
+    const categories = await Category.findAll();
 
     return products.map((p) => {
-      let categoriaNombre = null;
-      for (let c of categorias) {
-        if (c.id === p.categoriaId) {
-          categoriaNombre = c.nombre;
+      let categoryName = null;
+      for (let c of categories) {
+        if (c.id === p.categoryId) {
+          categoryName = c.name;
           break;
         }
       }
+
       return new ProductEntity({
         ...p.get(),
-        categoriaNombre
+        categoryName
       });
     });
   },
+
   async update(id, data) {
-    const product = await Producto.findByPk(id);
+    const product = await Product.findByPk(id);
     if (!product) return null;
     await product.update(data);
     return product;
   },
+
   async remove(id) {
-    const product = await Producto.findByPk(id);
+    const product = await Product.findByPk(id);
     if (!product) return null;
     await product.destroy();
     return true;
   }
 };
 
-module.exports = ProductRepository; 
+module.exports = ProductRepository;

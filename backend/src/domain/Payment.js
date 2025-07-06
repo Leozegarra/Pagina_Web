@@ -1,11 +1,11 @@
 class Payment {
-  constructor({ id, ordenId, monto, metodo, estado, fecha, createdAt, updatedAt }) {
+  constructor({ id, orderId, amount, method, status, date, createdAt, updatedAt }) {
     this.id = id;
-    this.ordenId = ordenId;
-    this.monto = monto;
-    this.metodo = metodo;
-    this.estado = estado;
-    this.fecha = fecha;
+    this.orderId = orderId;
+    this.amount = amount;
+    this.method = method;
+    this.status = status;
+    this.date = date;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }

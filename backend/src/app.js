@@ -49,4 +49,14 @@ app.post('/api/payments', PaymentController.create);
 app.put('/api/payments/:id', PaymentController.update);
 app.delete('/api/payments/:id', PaymentController.remove);
 
+
+
+// Cart routes
+const CartController = require('./controllers/CartController');
+
+app.post('/api/cart', CartController.create);
+app.get('/api/cart/:userId', CartController.getByUserId);
+app.put('/api/cart/:userId', CartController.update);
+app.delete('/api/cart/:userId', CartController.remove);
+
 module.exports = app; 

@@ -57,6 +57,7 @@ const UserController = {
   // Login
   async login(req, res) {
     try {
+      // Puedes unificar el nombre del campo (correo/email) según tu modelo
       const { correo, contrasena } = req.body;
       const user = await UserService.login(correo, contrasena);
       if (!user) return res.status(401).json({ error: 'Credenciales inválidas' });
@@ -79,4 +80,4 @@ const UserController = {
   }
 };
 
-module.exports = UserController; 
+module.exports = UserController;

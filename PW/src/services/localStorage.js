@@ -5,7 +5,7 @@ export const STORAGE_KEYS = {
   CATEGORIES: 'categories_data'
 };
 
-
+ 
 export const initialData = {
   users: [
     {

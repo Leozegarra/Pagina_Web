@@ -1,30 +1,35 @@
-const { Pago } = require('../db/models');
+const { Payment } = require('../db/models');
 
 const PaymentRepository = {
   async create(data) {
-    return await Pago.create(data);
+    return await Payment.create(data);
   },
+
   async findById(id) {
-    return await Pago.findByPk(id);
+    return await Payment.findByPk(id);
   },
+
   async findAll() {
-    return await Pago.findAll();
+    return await Payment.findAll();
   },
-  async findByOrden(ordenId) {
-    return await Pago.findAll({ where: { ordenId } });
+
+  async findByOrder(orderId) {
+    return await Payment.findAll({ where: { orderId } });
   },
+
   async update(id, data) {
-    const pago = await Pago.findByPk(id);
-    if (!pago) return null;
-    await pago.update(data);
-    return pago;
+    const payment = await Payment.findByPk(id);
+    if (!payment) return null;
+    await payment.update(data);
+    return payment;
   },
+
   async remove(id) {
-    const pago = await Pago.findByPk(id);
-    if (!pago) return null;
-    await pago.destroy();
+    const payment = await Payment.findByPk(id);
+    if (!payment) return null;
+    await payment.destroy();
     return true;
   }
 };
 
-module.exports = PaymentRepository; 
+module.exports = PaymentRepository;
