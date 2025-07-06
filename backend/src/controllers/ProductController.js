@@ -6,7 +6,66 @@ const ProductController = {
       const product = await ProductService.create(req.body);
       res.status(201).json(product);
     } catch (error) {
-      res.status(500).json({ error: 'Error al crear el producto', details: error.message });
+      console.error('Error creating product:', error);
+      
+      // Manejar errores de validación de Sequelize
+      if (error.name === 'SequelizeValidationError') {
+        const validationErrors = error.errors.map(err => ({
+          field: err.path,
+          message: err.message,
+          value: err.value
+        }));
+        
+        return res.status(400).json({ 
+          error: 'Error de validación', 
+          details: validationErrors 
+        });
+      }
+      
+      // Manejar errores de restricción de clave foránea
+      if (error.name === 'SequelizeForeignKeyConstraintError') {
+        return res.status(400).json({ 
+          error: 'Error de referencia', 
+          details: 'La categoría especificada no existe' 
+        });
+      }
+      
+      res.status(500).json({ 
+        error: 'Error al crear el producto', 
+        details: error.message 
+      });
+    }
+  },
+  async createMultiple(req, res) {
+    try {
+      const { products } = req.body;
+      
+      if (!Array.isArray(products)) {
+        return res.status(400).json({ error: 'El campo products debe ser un array' });
+      }
+      
+      const results = [];
+      for (const productData of products) {
+        try {
+          const product = await ProductService.create(productData);
+          results.push({ success: true, data: product });
+        } catch (error) {
+          results.push({ 
+            error: error.message, 
+            data: productData 
+          });
+        }
+      }
+      
+      res.status(201).json({ 
+        message: 'Creación múltiple completada', 
+        results 
+      });
+    } catch (error) {
+      res.status(500).json({ 
+        error: 'Error al crear productos', 
+        details: error.message 
+      });
     }
   },
   async getById(req, res) {

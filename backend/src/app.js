@@ -23,15 +23,17 @@ app.post('/api/recover-password', UserController.recoverPassword);
 
 // Category routes
 app.get('/api/categories', CategoryController.getAll);
-app.get('/api/categories/:id', CategoryController.getById);
 app.post('/api/categories', CategoryController.create);
+app.patch('/api/categories/bulk', CategoryController.updateMultiple);
+app.get('/api/categories/:id', CategoryController.getById);
 app.put('/api/categories/:id', CategoryController.update);
 app.delete('/api/categories/:id', CategoryController.remove);
 
 // Product routes
 app.get('/api/products', ProductController.getAll);
-app.get('/api/products/:id', ProductController.getById);
 app.post('/api/products', ProductController.create);
+app.post('/api/products/bulk', ProductController.createMultiple);
+app.get('/api/products/:id', ProductController.getById);
 app.put('/api/products/:id', ProductController.update);
 app.delete('/api/products/:id', ProductController.remove);
 

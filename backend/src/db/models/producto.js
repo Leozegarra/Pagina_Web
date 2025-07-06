@@ -11,15 +11,52 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Producto.belongsTo(models.Categoria, {
+        foreignKey: 'categoriaId',
+        as: 'categoria'
+      });
     }
   }
   Producto.init({
-    nombre: DataTypes.STRING,
-    precio: DataTypes.FLOAT,
-    categoriaId: DataTypes.INTEGER,
-    descripcion: DataTypes.STRING,
-    imagen: DataTypes.STRING,
-    stock: DataTypes.INTEGER,
+    nombre: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        len: [1, 255]
+      }
+    },
+    precio: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+      validate: {
+        min: 0
+      }
+    },
+    categoriaId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        isInt: true,
+        min: 1
+      }
+    },
+    descripcion: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    imagen: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    stock: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      validate: {
+        min: 0
+      }
+    },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE
   }, {
