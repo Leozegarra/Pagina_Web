@@ -1,0 +1,7 @@
+npm install swiper
+npm install bootstrap
+npm install react-bootstrap
+npm install react-slick slick-carousel
+npm install @emailjs/browser
+npm install leaflet
+npm install lucide-react
