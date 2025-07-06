@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import LogoIcon from "./../../assets/images/jpg/LogoIcon.jpg"
 
 const navItems = [
@@ -22,8 +22,17 @@ const navItems = [
 
 export default function SideBar({ onGestionarCategorias }) {
   const location = useLocation();
+  const navigate = useNavigate();
+
   const adminEmail = 'admin@example.com';
   const adminAvatar = LogoIcon;
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminLogueado');
+    sessionStorage.removeItem('adminLogueado');
+    navigate('/admin/login');
+  };
+
   return (
     <aside className="w-64 min-w-[180px] h-screen bg-white flex flex-col text-gray-800 shadow-2xl rounded-r-2xl border-r border-gray-100 py-6 px-4">
       <div className="flex flex-col items-center gap-2 mb-8">
@@ -33,6 +42,8 @@ export default function SideBar({ onGestionarCategorias }) {
           Dashboard
         </span>
       </div>
+
+      {/* Navegacion */}
       <nav className="flex-1">
         <ul className="flex flex-col gap-2">
           {navItems.map((item) => (
@@ -48,6 +59,9 @@ export default function SideBar({ onGestionarCategorias }) {
           ))}
         </ul>
       </nav>
+
+      {/* Pie de sidebar */}
+
       <div className="mt-auto pt-8 border-t border-gray-100 flex flex-col gap-2 items-center">
         {onGestionarCategorias && (
           <button
@@ -60,8 +74,15 @@ export default function SideBar({ onGestionarCategorias }) {
         )}
         <img src={adminAvatar} alt="Admin avatar" className="w-10 h-10 rounded-full border border-gray-200 shadow" />
         <span className="text-xs text-gray-500 font-medium mt-1">{adminEmail}</span>
-        <button className="w-full mt-3 py-2 rounded-full bg-gray-100 text-gray-700 font-semibold shadow hover:bg-red-100 hover:text-red-600 transition-all active:scale-95 text-sm flex items-center justify-center gap-2">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+
+        {/* 🔴 Botón Salir con cierre de sesión */}
+        <button
+          className="w-full mt-3 py-2 rounded-full bg-gray-100 text-gray-700 font-semibold shadow hover:bg-red-100 hover:text-red-600 transition-all active:scale-95 text-sm flex items-center justify-center gap-2"
+          onClick={handleLogout}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
           Salir
         </button>
       </div>
