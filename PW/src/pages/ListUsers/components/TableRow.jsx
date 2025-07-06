@@ -58,9 +58,9 @@ export default function TableRow({ user, index, setUsers }) {
           alt="Avatar"
           className="w-6 h-6 rounded-full border border-gray-200 shadow-sm"
         />
-        <span className="text-gray-700 font-medium">{user.name}</span>
+        <span className="text-gray-700 font-medium">{user.nombre}</span>
       </td>
-      <td className="p-1 text-gray-400 font-normal">{user.email}</td>
+      <td className="p-1 text-gray-400 font-normal">{user.correo}</td>
       <td className="p-1 flex items-center justify-start">
         <span
           className={`px-2 py-0.5 rounded-full text-[10px] font-semibold shadow-sm ${

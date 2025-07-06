@@ -21,7 +21,9 @@ const ListUsers = () => {
         const transformedUsers = usersData.map(user => ({
           ...user,
           status: user.estado ? 'Activo' : 'Desactivado',
-          avatar: `https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png`
+          avatar: user.avatar && user.avatar.trim() !== "" 
+            ? user.avatar 
+            : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
         }));
         console.log
         setUsers(transformedUsers);

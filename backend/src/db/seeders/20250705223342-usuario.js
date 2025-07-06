@@ -9,7 +9,7 @@ module.exports = {
         correo: "admin@example.com",
         rol: "Usuario",
         estado: "Activo",
-        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop",
+        avatar: " ",
         contrasena: "123456",
         createdAt: new Date(),
         updatedAt: new Date()

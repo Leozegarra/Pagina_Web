@@ -1,78 +1,76 @@
 import React, { useState, useEffect } from 'react';
 import DashboardHeader from '../../components/DashboardHeader/DashBoardHeader';
 import SideBar from '../../components/SideBar/SideBar';
-import productos from '../../contexts/ProductosJSON';
-
-const STORAGE_KEY = 'products_data';
 
 const CreateProduct = () => {
   const [formData, setFormData] = useState({
     nombre: '',
-    categoria: '',
+    categoriaId: '',
     descripcion: '',
+    precio: '',
     stock: 0,
     imagen: 'https://via.placeholder.com/150'
   });
-
-  const categoriasUnicas = Array.from(new Set(productos.map(p => p.categoria)));
-
-  const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [categorias, setCategorias] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!localStorage.getItem(STORAGE_KEY)) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(productos));
-    }
+    const fetchCategorias = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/categories');
+        if (!response.ok) throw new Error('Error al obtener categorías');
+        const categoriasData = await response.json();
+        setCategorias(categoriasData);
+      } catch (error) {
+        console.error('Error al cargar categorías:', error);
+        setCategorias([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategorias();
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setFormData((prev) => ({
-        ...prev,
-        [name]: name === "stock" ? Number(value) : value
-      }));
+      ...prev,
+      [name]: name === "stock" ? Number(value) : name === "precio" ? Number(value) : value
+    }));
   };
-  const handleSubmit = (e) => {
-    e.preventDefault();
 
-    // Validación de campos
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (
       !formData.nombre.trim() ||
-      !formData.categoria.trim() ||
-      formData.categoria === '' ||
-      formData.categoria === 'Seleccione una categoría' ||
+      !formData.categoriaId ||
       !formData.descripcion.trim() ||
       !formData.imagen.trim() ||
-      formData.stock === '' || formData.stock === null
+      formData.stock === '' || formData.stock === null ||
+      formData.precio === '' || formData.precio === null
     ) {
       alert('Por favor, complete todos los campos y seleccione una categoría válida.');
       return;
     }
-
-    const existingProducts = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    const newProduct = {
-      id: Date.now(),
-      name: formData.nombre,
-      category: formData.categoria,
-      description: formData.descripcion,
-      stock: formData.stock,
-      image: formData.imagen
-    };
-    const updatedProducts = [...existingProducts, newProduct];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedProducts));
-
-    alert('Producto creado correctamente');
-
-    setFormData({
-      nombre: '',
-      categoria: '',
-      descripcion: '',
-      stock: 0,
-      imagen: 'https://via.placeholder.com/150'
-    });
+    try {
+      const response = await fetch('http://localhost:3000/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      if (!response.ok) throw new Error('Error al crear producto');
+      alert('Producto creado correctamente');
+      setFormData({
+        nombre: '',
+        categoriaId: '',
+        descripcion: '',
+        precio: '',
+        stock: 0,
+        imagen: 'https://via.placeholder.com/150'
+      });
+    } catch (error) {
+      alert('Error al crear producto: ' + error.message);
+    }
   };
 
   return (
@@ -81,7 +79,6 @@ const CreateProduct = () => {
       <div className="flex-1 p-6">
         <DashboardHeader title="Crear Producto" />
         <form onSubmit={handleSubmit} className="max-w-3xl mx-auto mt-10 bg-white p-8 rounded-lg shadow space-y-6">
-          
           <div>
             <label className="block text-gray-700 font-medium mb-1">Nombre del Producto</label>
             <input
@@ -93,22 +90,20 @@ const CreateProduct = () => {
               className="w-full border border-gray-300 rounded-lg p-2"
             />
           </div>
-
           <div>
             <label className="block text-gray-700 font-medium mb-1">Categoría</label>
             <select
-              name="categoria"
-              value={formData.categoria}
+              name="categoriaId"
+              value={formData.categoriaId}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg p-2"
             >
               <option value="">Seleccione una categoría</option>
-              {categoriasUnicas.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
+              {categorias.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.nombre}</option>
               ))}
             </select>
           </div>
-
           <div>
             <label className="block text-gray-700 font-medium mb-1">Descripción</label>
             <textarea
@@ -120,7 +115,6 @@ const CreateProduct = () => {
               className="w-full border border-gray-300 rounded-lg p-2"
             />
           </div>
-
           <div>
             <input
               type="text"
@@ -131,7 +125,6 @@ const CreateProduct = () => {
               className="w-full border border-gray-300 rounded-lg p-2"
             />
           </div>
-
           <div>
             <label className="block text-gray-700 font-medium mb-1">Stock</label>
             <input
@@ -143,7 +136,18 @@ const CreateProduct = () => {
               className="w-full border border-gray-300 rounded-lg p-2"
             />
           </div>
-
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">Precio</label>
+            <input
+              type="number"
+              name="precio"
+              value={formData.precio}
+              min="0"
+              step="0.01"
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg p-2"
+            />
+          </div>
           <div className="text-end">
             <button
               type="submit"
@@ -157,4 +161,4 @@ const CreateProduct = () => {
   );
 }
 
-export default CreateProduct
+export default CreateProduct;

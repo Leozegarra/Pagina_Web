@@ -1,14 +1,18 @@
-const { Orden } = require('../db/models');
+const { Orden, Usuario } = require('../db/models');
 
 const OrderRepository = {
   async create(data) {
     return await Orden.create(data);
   },
   async findById(id) {
-    return await Orden.findByPk(id);
+    return await Orden.findByPk(id, {
+      include: [{ model: Usuario, as: 'usuario', attributes: ['id', 'nombre', 'correo'] }]
+    });
   },
   async findAll() {
-    return await Orden.findAll();
+    return await Orden.findAll({
+      include: [{ model: Usuario, as: 'usuario', attributes: ['id', 'nombre', 'correo'] }]
+    });
   },
   async findByUsuario(usuarioId) {
     return await Orden.findAll({ where: { usuarioId } });
