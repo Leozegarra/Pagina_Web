@@ -2,6 +2,9 @@ import { Link } from 'react-router-dom';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { getUsers } from '../../services/userService';
+
+
 function Recover() {
   const [inputEmail, setEmail] = useState('');
   const [inputName, setName] = useState('');
@@ -12,21 +15,29 @@ function Recover() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const Email = sessionStorage.getItem('useremail');
-    const name = sessionStorage.getItem('name');
-    const sname = sessionStorage.getItem('sname');
 
-    if (inputEmail === Email && inputName === name && inputSName === sname) {
+
+    const users = getUsers();
+    const user = users.find(
+      u => u.email === inputEmail && u.name === inputName && u.sname === inputSName
+    );
+
+    if(user)
+    {
       const newPass = window.prompt('Establece tu nueva contraseña: ');
-      if (newPass) {
-        sessionStorage.setItem('userpass', newPass);
-        setSuccess('Contraseña actualizada correctamente.');
-        setError('');
-        setTimeout(() => navigate('/Login'), 1500);
+      if(newPass)
+      {
+      user.password = newPass;
+      localStorage.setItem("users_data", JSON.stringify(users));
+      
+      setError('');
+      alert('Contraseña actualizada');
+      navigate('/Login');
       }
-    } else {
-      setError('Datos incorrectos. Verifica tu información.');
-      setSuccess('');
+    }
+    else {
+      setError('No se pudo verificar la cuenta');
+
     }
   };
 

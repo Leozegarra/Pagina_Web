@@ -1,47 +1,46 @@
-const { Product, Category } = require('../db/models /');
+const { Producto, Categoria } = require('../db/models');
 const ProductEntity = require('../domain/Product');
 
 const ProductRepository = {
   async create(productData) {
-    console.log()
-    return await Product.create(productData);
+    return await Producto.create(productData);
   },
   async findById(id) {
-    const product = await Product.findByPk(id, {
-      include: [{ model: Category, as: 'category', attributes: ['name'] }]
+    const product = await Producto.findByPk(id, {
+      include: [{ model: Categoria, as: 'categoria', attributes: ['nombre'] }]
     });
     if (!product) return null;
     return new ProductEntity({
       ...product.get(),
-      categoryName: product.category ? product.category.name : null
+      categoriaNombre: product.categoria ? product.categoria.nombre : null
     });
   },
   async findAll() {
-    const products = await Product.findAll();
-    const categories = await Category.findAll();
+    const products = await Producto.findAll();
+    const categorias = await Categoria.findAll();
 
     return products.map((p) => {
-      let categoryName = null;
-      for (let c of categories) {
-        if (c.id === p.categoryId) {
-          categoryName = c.name;
+      let categoriaNombre = null;
+      for (let c of categorias) {
+        if (c.id === p.categoriaId) {
+          categoriaNombre = c.nombre;
           break;
         }
       }
       return new ProductEntity({
         ...p.get(),
-        categoryName
+        categoriaNombre
       });
     });
   },
   async update(id, data) {
-    const product = await Product.findByPk(id);
+    const product = await Producto.findByPk(id);
     if (!product) return null;
     await product.update(data);
     return product;
   },
   async remove(id) {
-    const product = await Product.findByPk(id);
+    const product = await Producto.findByPk(id);
     if (!product) return null;
     await product.destroy();
     return true;

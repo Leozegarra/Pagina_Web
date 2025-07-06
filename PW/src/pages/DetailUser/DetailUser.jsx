@@ -11,30 +11,47 @@ const DetailUser = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-  
-      const users = JSON.parse(localStorage.getItem('users_data'));
-      const currentUser = users.find(u => u.id === parseInt(id));
-      
-      if (!currentUser) {
-        navigate('/admin/listUsers');
-        return;
-      }
-      setUser(currentUser);
+    const fetchUserData = async () => {
+      try {
+ 
+        const response = await fetch(`http://localhost:3000/api/users/${id}`);
+        console.log(response)
+        if (!response.ok) {
+          throw new Error('Usuario no encontrado');
+        }
+        const userData = await response.json();
+        
 
-      const orders = JSON.parse(localStorage.getItem('orders_data'));
-      console.log("orders",orders)
-      console.log("currentUser",currentUser)
-      const filteredOrders = orders
-        .filter(order => order.email === currentUser.email)
-        .slice(0, 10);
-      console.log("filteredOrders",filteredOrders)
-      setUserOrders(filteredOrders);
-    } catch (error) {
-      console.error('Error al cargar los datos:', error);
-    } finally {
-      setLoading(false);
-    }
+        const transformedUser = {
+          ...userData,
+          status: userData.estado ? 'Activo' : 'Inactivo',
+          avatar: `https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png`
+        };
+        
+        setUser(transformedUser);
+        console.log(userData)
+
+        const ordersResponse = await fetch('http://localhost:3000/api/orders');
+        if (ordersResponse.ok) {
+          const allOrders = await ordersResponse.json();
+
+          const filteredOrders = allOrders
+            .filter(order => order.userId === userData.id)
+            .slice(0, 10);
+          setUserOrders(filteredOrders);
+        } else {
+          console.error('Error al obtener órdenes');
+          setUserOrders([]);
+        }
+      } catch (error) {
+        console.error('Error al cargar los datos:', error);
+        navigate('/admin/listUsers');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
   }, [id, navigate]);
 
   if (loading) {
@@ -63,7 +80,7 @@ const DetailUser = () => {
                 <div className="text-center w-full flex flex-col items-center">
                   <div className="w-36 h-36 rounded-full border-4 border-teal-200 shadow-lg overflow-hidden mb-4 flex items-center justify-center bg-gray-50">
                     <img
-                      src={user.avatar}
+                      src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
                       alt={user.name}
                       className="w-32 h-32 object-cover"
                     />
@@ -122,17 +139,21 @@ const DetailUser = () => {
                           onClick={() => navigate(`/admin/orders/${order.id}`)}
                         >
                           <td className="px-6 py-4 whitespace-nowrap text-base font-bold text-blue-600">#{order.id}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-base text-gray-900">{order.producto}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-base text-gray-500">{order.fecha}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-base text-gray-900">
+                            {order.productos ? `${order.productos.length} producto(s)` : 'N/A'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-base text-gray-500">
+                            {new Date(order.fecha || order.createdAt).toLocaleDateString()}
+                          </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                              order.estado === 'Entregado'
+                              order.status === 'completado'
                                 ? 'bg-green-100 text-green-700 border border-green-200'
-                                : order.estado === 'Cancelado'
+                                : order.status === 'cancelado'
                                 ? 'bg-red-100 text-red-700 border border-red-200'
                                 : 'bg-yellow-100 text-yellow-700 border border-yellow-200'
                             }`}>
-                              {order.estado}
+                              {order.status}
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-base font-extrabold text-teal-700">S/ {order.precio}</td>

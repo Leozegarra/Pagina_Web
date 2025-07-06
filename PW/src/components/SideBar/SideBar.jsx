@@ -20,7 +20,7 @@ const navItems = [
   )},
 ];
 
-export default function SideBar({ onGestionarCategorias }) {
+export default function SideBar({ onGestionarCategorias, onResetCategorias }) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -63,6 +63,15 @@ export default function SideBar({ onGestionarCategorias }) {
       {/* Pie de sidebar */}
 
       <div className="mt-auto pt-8 border-t border-gray-100 flex flex-col gap-2 items-center">
+        {onResetCategorias && (
+          <button
+            className="w-full mb-2 py-2 rounded-full bg-yellow-50 text-yellow-700 font-semibold shadow hover:bg-yellow-100 transition-all active:scale-95 text-sm flex items-center justify-center gap-2"
+            onClick={onResetCategorias}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            Resetear categorías
+          </button>
+        )}
         {onGestionarCategorias && (
           <button
             className="w-full mb-2 py-2 rounded-full bg-gray-100 text-gray-700 font-semibold shadow hover:bg-gray-200 transition-all active:scale-95 text-sm flex items-center justify-center gap-2"

@@ -1,29 +1,28 @@
-const db = require('../db/models /')
-const Payment = db.Payment;
+const { Pago } = require('../db/models');
 
 const PaymentRepository = {
   async create(data) {
-    return await Payment.create(data);
+    return await Pago.create(data);
   },
   async findById(id) {
-    return await Payment.findByPk(id);
+    return await Pago.findByPk(id);
   },
   async findAll() {
-    return await Payment.findAll();
+    return await Pago.findAll();
   },
-  async findByOrder(orderId) {
-    return await Payment.findAll({ where: { orderId } });
+  async findByOrden(ordenId) {
+    return await Pago.findAll({ where: { ordenId } });
   },
   async update(id, data) {
-    const payment = await Payment.findByPk(id);
-    if (!payment) return null;
-    await payment.update(data);
-    return payment;
+    const pago = await Pago.findByPk(id);
+    if (!pago) return null;
+    await pago.update(data);
+    return pago;
   },
   async remove(id) {
-    const payment = await Payment.findByPk(id);
-    if (!payment) return null;
-    await payment.destroy();
+    const pago = await Pago.findByPk(id);
+    if (!pago) return null;
+    await pago.destroy();
     return true;
   }
 };
