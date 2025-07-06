@@ -4,7 +4,6 @@ const OrderController = {
   async create(req, res) {
     try {
       const order = await OrderService.create(req.body);
-      console.log(order)
       res.status(201).json(order);
     } catch (error) {
       res.status(500).json({ error: 'Error al crear la orden', details: error.message });
@@ -51,7 +50,7 @@ const OrderController = {
 async function getOrderDetails(req, res) {
   try {
     const id = req.params.id;
-    const order = await OrderService.findById(id);
+    const order = await OrderService.getById(id);
     if (!order) return res.status(404).json({ error: 'Orden no encontrada' });
     const productos = await OrderService.getOrderWithProductDetails(order);
     return res.json({ ...order, productos });

@@ -2,39 +2,45 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Payments', {
+    await queryInterface.createTable('pagos', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      orderId: {
-        type: Sequelize.INTEGER
+      ordenId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'ordenes',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
-      name: {
+      monto: {
+        type: Sequelize.FLOAT
+      },
+      metodo: {
         type: Sequelize.STRING
       },
-      email: {
+      estado: {
         type: Sequelize.STRING
       },
-      address: {
-        type: Sequelize.STRING
+      fecha: {
+        type: Sequelize.DATE
       },
-      cardNumber: {
-        type: Sequelize.STRING
-      },
-      created_at: {
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Payments');
+    await queryInterface.dropTable('pagos');
   }
 };

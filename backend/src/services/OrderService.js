@@ -1,19 +1,19 @@
 const OrderRepository = require('../repository/OrderRepository');
 const OrderEntity = require('../domain/Order');
-const Product = require('../db/models /').Product;
+const Producto = require('../db/models').Producto;
 
 /**
  * Dado un objeto order, devuelve un array con los detalles completos de cada producto y su cantidad.
  * @param {Order} order Instancia de Order (con campo productos)
- * @returns {Promise<Array<{ product: Product, cantidad: number }>>}
+ * @returns {Promise<Array<{ producto: Producto, cantidad: number }>>}
  */
 async function getOrderWithProductDetails(order) {
   if (!order || !order.productos || !Array.isArray(order.productos)) return [];
-  const productosIds = order.productos.map(p => p.product_id);
-  const productos = await Product.findAll({ where: { id: productosIds } });
+  const productosIds = order.productos.map(p => p.productoId);
+  const productos = await Producto.findAll({ where: { id: productosIds } });
   // Combina detalles y cantidad
   return order.productos.map(p => ({
-    product: productos.find(prod => prod.id === p.product_id),
+    producto: productos.find(prod => prod.id === p.productoId),
     cantidad: p.cantidad
   }));
 }

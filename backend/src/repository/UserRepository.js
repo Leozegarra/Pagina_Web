@@ -1,28 +1,26 @@
-const { User } = require('../db/models /')
+const { Usuario } = require('../db/models')
 
 const UserRepository = {
   async create(userData) {
-    return await User.create(userData);
+    return await Usuario.create(userData);
   },
-  async findByEmail(email) {
-    console.log("repository");
-    return await User.findOne({ where: { email } });
+  async findByCorreo(correo) {
+    return await Usuario.findOne({ where: { correo } });
   },
   async findById(id) {
-    return await User.findByPk(id);
+    return await Usuario.findByPk(id);
   },
   async findAll() {
-    console.log('findAll');
-    return await User.findAll();
+    return await Usuario.findAll();
   },
   async update(id, data) {
-    const user = await User.findByPk(id);
+    const user = await Usuario.findByPk(id);
     if (!user) return null;
     await user.update(data);
     return user;
   },
   async remove(id) {
-    const user = await User.findByPk(id);
+    const user = await Usuario.findByPk(id);
     if (!user) return null;
     await user.destroy();
     return true;
