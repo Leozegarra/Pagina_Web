@@ -2,20 +2,26 @@ import React, { useEffect, useState } from "react";
 import ProductTable from "./components/ProductsTable";
 import DashboardHeader from "../../components/DashboardHeader/DashBoardHeader";
 import Sidebar from "../../components/SideBar/SideBar";
-import productos from '../../contexts/ProductosJSON';
-
-const STORAGE_KEY = 'products_data';
 
 const ListProducts = () => {
-  const [products, setProducts] = useState(() => {
-    try {
-      const savedProducts = localStorage.getItem(STORAGE_KEY);
-      return savedProducts ? JSON.parse(savedProducts) : productos;
-    } catch (error) {
-      console.error('Error al cargar productos:', error);
-      return productos;
-    }
-  });
+  const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/products');
+        if (!response.ok) throw new Error('Error al obtener productos');
+        const productsData = await response.json();
+        setProducts(productsData);
+      } catch (error) {
+        console.error('Error al cargar productos:', error);
+        setProducts([]);
+      }
+    };
+    fetchProducts();
+  }, []);
+
   const deleteProduct = (id) => {
     const confirm = window.confirm("¿Estás seguro de eliminar este producto?");
     if (!confirm) return;
@@ -27,25 +33,14 @@ const ListProducts = () => {
     setProducts(updated);
   };
 
-  const [searchTerm, setSearchTerm] = useState('');
-
   const filteredProducts = products.filter(product => {
-    console.log(product.category);
     const searchLower = searchTerm.toLowerCase();
     return (
-      product.name.toLowerCase().includes(searchLower) ||
-      product.categoria.toLowerCase().includes(searchLower) ||
-      product.descripcion.toLowerCase().includes(searchLower)
+      (product.nombre || '').toLowerCase().includes(searchLower) ||
+      (product.categoria || '').toLowerCase().includes(searchLower) ||
+      (product.descripcion || '').toLowerCase().includes(searchLower)
     );
   });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-    } catch (error) {
-      console.error('Error guardando productos en localStorage:', error);
-    }
-  }, [products]);
 
   return (
     <div className="flex min-h-screen bg-gray-50">

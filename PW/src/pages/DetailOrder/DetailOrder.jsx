@@ -24,7 +24,7 @@ const DetailOrder = () => {
         setOrder(orderData);
 
         // Obtener información del usuario
-        const userResponse = await fetch(`http://localhost:3000/api/users/${orderData.userId}`);
+        const userResponse = await fetch(`http://localhost:3000/api/users/${orderData.usuarioId}`);
         if (userResponse.ok) {
           const userData = await userResponse.json();
           setUser(userData);
@@ -35,10 +35,10 @@ const DetailOrder = () => {
         if (productsResponse.ok) {
           const allProducts = await productsResponse.json();
           const orderProducts = orderData.productos.map(item => {
-            const product = allProducts.find(p => p.id === item.product_id);
+            const product = allProducts.find(p => p.id === item.productoId);
             return {
               ...item,
-              product: product || { name: 'Producto no encontrado', price: 0 }
+              product: product || { nombre: 'Producto no encontrado', precio: 0 }
             };
           });
           setProducts(orderProducts);
@@ -104,7 +104,7 @@ const DetailOrder = () => {
   }
 
   const totalAmount = products.reduce((total, item) => {
-    return total + (item.product.price * item.cantidad);
+    return total + (item.product.precio * item.cantidad);
   }, 0);
 
   return (
@@ -128,15 +128,15 @@ const DetailOrder = () => {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className={`px-4 py-2 rounded-full text-sm font-medium ${
-                    order.status === 'completado' 
+                    order.estado === 'completado' 
                       ? 'bg-green-100 text-green-800'
-                      : order.status === 'cancelado'
+                      : order.estado === 'cancelado'
                       ? 'bg-red-100 text-red-800'
                       : 'bg-yellow-100 text-yellow-800'
                   }`}>
-                    {order.status}
+                    {order.estado}
                   </span>
-                  {order.status !== 'cancelado' && order.status !== 'completado' && (
+                  {order.estado !== 'cancelado' && order.estado !== 'completado' && (
                     <button
                       onClick={() => setShowCancelModal(true)}
                       className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
@@ -159,15 +159,15 @@ const DetailOrder = () => {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center p-3 bg-white rounded-lg">
                       <span className="text-gray-600">Nombre</span>
-                      <span className="font-medium text-gray-800">{user ? user.name : 'N/A'}</span>
+                      <span className="font-medium text-gray-800">{user ? user.nombre : 'N/A'}</span>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-white rounded-lg">
                       <span className="text-gray-600">Email</span>
-                      <span className="font-medium text-gray-800">{user ? user.email : 'N/A'}</span>
+                      <span className="font-medium text-gray-800">{user ? user.correo : 'N/A'}</span>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-white rounded-lg">
                       <span className="text-gray-600">ID Usuario</span>
-                      <span className="font-medium text-gray-800">{order.userId}</span>
+                      <span className="font-medium text-gray-800">{order.usuarioId}</span>
                     </div>
                   </div>
                 </div>
@@ -203,9 +203,16 @@ const DetailOrder = () => {
                   <div className="space-y-4">
                     {products.map((item, index) => (
                       <div key={index} className="flex justify-between items-center p-4 bg-white rounded-lg">
-                        <div className="flex-1">
-                          <h4 className="font-medium text-gray-800">{item.product.name}</h4>
-                          <p className="text-sm text-gray-600">ID: {item.product_id}</p>
+                        <div className="flex-1 flex items-center gap-4">
+                          <img
+                            src={item.product.imagen}
+                            alt={item.product.nombre}
+                            className="w-16 h-16 object-contain rounded border mr-4"
+                          />
+                          <div>
+                            <h4 className="font-medium text-gray-800">{item.product.nombre}</h4>
+                            <p className="text-sm text-gray-600">ID: {item.productoId}</p>
+                          </div>
                         </div>
                         <div className="flex items-center gap-6">
                           <div className="text-center">
@@ -214,11 +221,11 @@ const DetailOrder = () => {
                           </div>
                           <div className="text-center">
                             <span className="text-sm text-gray-600">Precio Unit.</span>
-                            <p className="font-medium text-gray-800">S/. {item.product.price}</p>
+                            <p className="font-medium text-gray-800">S/. {item.product.precio}</p>
                           </div>
                           <div className="text-center">
                             <span className="text-sm text-gray-600">Subtotal</span>
-                            <p className="font-bold text-gray-800">S/. {item.product.price * item.cantidad}</p>
+                            <p className="font-bold text-gray-800">S/. {item.product.precio * item.cantidad}</p>
                           </div>
                         </div>
                       </div>

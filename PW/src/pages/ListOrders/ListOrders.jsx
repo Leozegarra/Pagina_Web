@@ -23,13 +23,14 @@ export default function ListOrders() {
         
       
         const transformedOrders = ordersData.map(order => {
-          const user = users.find(u => u.id === order.userId);
+          const user = users.find(u => u.id === order.usuarioId);
           return {
             ...order,
-            cliente: user ? user.name : 'Usuario no encontrado',
-            email: user ? user.email : 'N/A',
+            cliente: user ? user.nombre : 'Usuario no encontrado',
+            email: user ? user.correo : 'N/A',
             producto: `${order.productos ? order.productos.length : 0} producto(s)`,
-            fecha: new Date(order.fecha || order.createdAt).toLocaleDateString()
+            fecha: new Date(order.fecha || order.createdAt).toLocaleDateString(),
+            status: order.estado
           };
         });
         

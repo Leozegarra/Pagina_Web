@@ -16,7 +16,7 @@ const ProductsRow = ({ product, onDelete }) => {
       </td>
       <td className="px-4 py-2 text-center font-mono text-gray-500">{id}</td>
       <td className="px-4 py-2 text-center font-semibold text-gray-800">{name || nombre}</td>
-      <td className="px-4 py-2 text-center text-teal-700">{category || categoria}</td>
+      <td className="px-4 py-2 text-center text-teal-700">{product.categoriaNombre || category || categoria}</td>
       <td className="px-4 py-2 text-center text-gray-600">{description || descripcion}</td>
       <td className="px-4 py-2 text-center font-bold">{stock}</td>
       <td className="px-4 py-2 text-center space-x-2">

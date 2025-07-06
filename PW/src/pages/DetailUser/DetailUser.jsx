@@ -25,7 +25,9 @@ const DetailUser = () => {
         const transformedUser = {
           ...userData,
           status: userData.estado ? 'Activo' : 'Inactivo',
-          avatar: `https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png`
+          avatar: userData.avatar && userData.avatar.trim() !== ""
+            ? userData.avatar
+            : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
         };
         
         setUser(transformedUser);
@@ -36,7 +38,7 @@ const DetailUser = () => {
           const allOrders = await ordersResponse.json();
 
           const filteredOrders = allOrders
-            .filter(order => order.userId === userData.id)
+            .filter(order => order.usuarioId === userData.id)
             .slice(0, 10);
           setUserOrders(filteredOrders);
         } else {
@@ -80,13 +82,13 @@ const DetailUser = () => {
                 <div className="text-center w-full flex flex-col items-center">
                   <div className="w-36 h-36 rounded-full border-4 border-teal-200 shadow-lg overflow-hidden mb-4 flex items-center justify-center bg-gray-50">
                     <img
-                      src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-                      alt={user.name}
+                      src={user.avatar && user.avatar.trim() !== "" ? user.avatar : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"}
+                      alt={user.nombre}
                       className="w-32 h-32 object-cover"
                     />
                   </div>
-                  <h2 className="mt-2 text-3xl font-extrabold text-gray-800 tracking-tight">{user.name}</h2>
-                  <p className="text-teal-600 text-lg font-semibold mt-1">{user.email}</p>
+                  <h2 className="mt-2 text-3xl font-extrabold text-gray-800 tracking-tight">{user.nombre}</h2>
+                  <p className="text-teal-600 text-lg font-semibold mt-1">{user.correo}</p>
                   <div className="mt-4 flex items-center justify-center gap-2">
                     {user.status === 'Activo' ? (
                       <span className="inline-flex items-center gap-1 px-4 py-2 rounded-full text-sm font-bold bg-green-100 text-green-700 border border-green-200">
@@ -147,13 +149,13 @@ const DetailUser = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                              order.status === 'completado'
+                              order.estado === 'completado'
                                 ? 'bg-green-100 text-green-700 border border-green-200'
-                                : order.status === 'cancelado'
+                                : order.estado === 'cancelado'
                                 ? 'bg-red-100 text-red-700 border border-red-200'
                                 : 'bg-yellow-100 text-yellow-700 border border-yellow-200'
                             }`}>
-                              {order.status}
+                              {order.estado}
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-base font-extrabold text-teal-700">S/ {order.precio}</td>
