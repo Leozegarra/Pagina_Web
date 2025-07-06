@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { STORAGE_KEYS, localStorageService } from "../../services/localStorage"
 
 const Cuenta = () => {
   const navigate = useNavigate()
@@ -8,10 +7,15 @@ const Cuenta = () => {
   const [ordenes, setOrdenes] = useState([])
   const [vista, setVista] = useState("ordenes")
   const [ordenSeleccionada, setOrdenSeleccionada] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [passwordData, setPasswordData] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  })
 
   useEffect(() => {
-    const userStorage =
-      localStorage.getItem("loggedUser") || localStorage.getItem("usuario_actual")
+    const userStorage = localStorage.getItem("loggedUser") || localStorage.getItem("usuario_actual")
     if (!userStorage) {
       navigate("/login")
       return
@@ -19,35 +23,58 @@ const Cuenta = () => {
 
     const usuarioActual = JSON.parse(userStorage)
     setUsuario(usuarioActual)
-
-    const ordenesTotales = localStorageService.getData(STORAGE_KEYS.ORDERS)
-    const ordenesDelUsuario = ordenesTotales.filter(
-      (orden) => orden.email === usuarioActual.email
-    )
-    setOrdenes(ordenesDelUsuario)
+    
+    // Obtener datos actualizados del usuario desde la API
+    fetchUserData(usuarioActual.id)
+    // Obtener órdenes del usuario desde la API
+    fetchUserOrders(usuarioActual.id)
   }, [navigate])
+
+  const fetchUserData = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/users/${userId}`)
+      if (response.ok) {
+        const userData = await response.json()
+        setUsuario(userData)
+        // Actualizar localStorage con datos actualizados
+        localStorage.setItem("usuario_actual", JSON.stringify(userData))
+      }
+    } catch (error) {
+      console.error("Error al obtener datos del usuario:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchUserOrders = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/orders?usuarioId=${userId}`)
+      if (response.ok) {
+        const ordersData = await response.json()
+        setOrdenes(ordersData)
+      }
+    } catch (error) {
+      console.error("Error al obtener órdenes del usuario:", error)
+    }
+  }
 
   const cerrarSesion = () => {
     localStorage.removeItem("usuario_actual")
+    localStorage.removeItem("loggedUser")
     navigate("/")
     window.location.reload()
   }
 
-  const handleInputChange = (e) => {
+  const handlePasswordChange = (e) => {
     const { name, value } = e.target
-    setUsuario((prev) => ({ ...prev, [name]: value }))
+    setPasswordData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleGuardarContrasena = () => {
-    const { oldPassword, newPassword, confirmPassword } = usuario
+  const handleGuardarContrasena = async () => {
+    const { oldPassword, newPassword, confirmPassword } = passwordData
 
     if (!oldPassword || !newPassword || !confirmPassword) {
       alert("Completa todos los campos")
-      return
-    }
-
-    if (oldPassword !== usuario.password) {
-      alert("La contraseña actual es incorrecta")
       return
     }
 
@@ -56,29 +83,51 @@ const Cuenta = () => {
       return
     }
 
-    const usuarios = localStorageService.getData(STORAGE_KEYS.USERS)
-    const index = usuarios.findIndex((u) => u.email === usuario.email)
+    try {
+      const response = await fetch(`http://localhost:3001/api/users/${usuario.id}/change-password`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          oldPassword,
+          newPassword
+        })
+      })
 
-    if (index !== -1) {
-      usuarios[index].password = newPassword
-      localStorageService.saveData(STORAGE_KEYS.USERS, usuarios)
-
-      const updatedUser = { ...usuario, password: newPassword }
-      delete updatedUser.oldPassword
-      delete updatedUser.newPassword
-      delete updatedUser.confirmPassword
-
-      localStorage.setItem("usuario_actual", JSON.stringify(updatedUser))
-      setUsuario(updatedUser)
-
-      alert("Contraseña actualizada correctamente")
-    } else {
-      alert("Error al actualizar la contraseña")
+      if (response.ok) {
+        alert("Contraseña actualizada correctamente")
+        setPasswordData({
+          oldPassword: "",
+          newPassword: "",
+          confirmPassword: ""
+        })
+      } else {
+        const errorData = await response.json()
+        alert(errorData.message || "Error al actualizar la contraseña")
+      }
+    } catch (error) {
+      console.error("Error al cambiar contraseña:", error)
+      alert("Error al cambiar la contraseña")
     }
   }
 
-  const calcularTotal = (items) =>
-    items.reduce((sum, item) => sum + item.precio * (item.cantidad || 1), 0)
+  const calcularTotal = (items) => {
+    if (!items || !Array.isArray(items)) return 0
+    return items.reduce((sum, item) => sum + (item.precio || 0) * (item.cantidad || 1), 0)
+  }
+
+  if (loading) {
+    return (
+      <div className="container mt-4">
+        <div className="text-center">
+          <div className="spinner-border" role="status">
+            <span className="visually-hidden">Cargando...</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (!usuario) return null
 
@@ -96,8 +145,8 @@ const Cuenta = () => {
               style={{ height: "200px", objectFit: "cover" }}
             />
             <div className="card-body">
-              <h5>{usuario.name}</h5>
-              <p className="text-muted">{usuario.email}</p>
+              <h5>{usuario.nombre}</h5>
+              <p className="text-muted">{usuario.correo}</p>
               <button
                 onClick={cerrarSesion}
                 className="btn btn-outline-danger btn-sm mt-2"
@@ -112,13 +161,13 @@ const Cuenta = () => {
               className={`btn btn-${vista === "ordenes" ? "primary" : "light"}`}
               onClick={() => setVista("ordenes")}
             >
-              Detalle de orden
+              Mis órdenes
             </button>
             <button
               className={`btn btn-${vista === "datos" ? "primary" : "light"}`}
               onClick={() => setVista("datos")}
             >
-              Datos de registro de usuario
+              Datos de registro
             </button>
             <button
               className={`btn btn-${vista === "contrasena" ? "primary" : "light"}`}
@@ -139,6 +188,7 @@ const Cuenta = () => {
                   <tr>
                     <th>ID</th>
                     <th>Fecha</th>
+                    <th>Estado</th>
                     <th>Total</th>
                     <th>Acciones</th>
                   </tr>
@@ -148,8 +198,13 @@ const Cuenta = () => {
                     ordenes.map((orden) => (
                       <tr key={orden.id}>
                         <td>{orden.id}</td>
-                        <td>{orden.fecha}</td>
-                        <td>S/. {calcularTotal(orden.items).toFixed(2)}</td>
+                        <td>{new Date(orden.fechaCreacion).toLocaleDateString()}</td>
+                        <td>
+                          <span className={`badge bg-${orden.estado === 'completada' ? 'success' : orden.estado === 'pendiente' ? 'warning' : 'secondary'}`}>
+                            {orden.estado}
+                          </span>
+                        </td>
+                        <td>S/. {orden.total?.toFixed(2) || calcularTotal(orden.productos).toFixed(2)}</td>
                         <td>
                           <button
                             className="btn btn-sm btn-info"
@@ -162,7 +217,7 @@ const Cuenta = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="4" className="text-center text-muted">
+                      <td colSpan="5" className="text-center text-muted">
                         No tienes órdenes registradas.
                       </td>
                     </tr>
@@ -177,16 +232,19 @@ const Cuenta = () => {
               <h4>Datos del Usuario</h4>
               <ul className="list-group mt-3">
                 <li className="list-group-item">
-                  <strong>Nombre:</strong> {usuario.name}
+                  <strong>Nombre:</strong> {usuario.nombre}
                 </li>
                 <li className="list-group-item">
-                  <strong>Email:</strong> {usuario.email}
+                  <strong>Email:</strong> {usuario.correo}
                 </li>
                 <li className="list-group-item">
-                  <strong>Rol:</strong> {usuario.role}
+                  <strong>Rol:</strong> {usuario.rol}
                 </li>
                 <li className="list-group-item">
-                  <strong>Estado:</strong> {usuario.status}
+                  <strong>Estado:</strong> {usuario.estado}
+                </li>
+                <li className="list-group-item">
+                  <strong>Fecha de registro:</strong> {new Date(usuario.fechaCreacion).toLocaleDateString()}
                 </li>
               </ul>
             </>
@@ -201,24 +259,24 @@ const Cuenta = () => {
                   name="oldPassword"
                   placeholder="Contraseña actual"
                   className="form-control mb-2"
-                  value={usuario.oldPassword || ""}
-                  onChange={handleInputChange}
+                  value={passwordData.oldPassword}
+                  onChange={handlePasswordChange}
                 />
                 <input
                   type="password"
                   name="newPassword"
                   placeholder="Nueva contraseña"
                   className="form-control mb-2"
-                  value={usuario.newPassword || ""}
-                  onChange={handleInputChange}
+                  value={passwordData.newPassword}
+                  onChange={handlePasswordChange}
                 />
                 <input
                   type="password"
                   name="confirmPassword"
                   placeholder="Confirmar nueva contraseña"
                   className="form-control mb-3"
-                  value={usuario.confirmPassword || ""}
-                  onChange={handleInputChange}
+                  value={passwordData.confirmPassword}
+                  onChange={handlePasswordChange}
                 />
                 <button className="btn btn-success" onClick={handleGuardarContrasena}>
                   Guardar contraseña
@@ -248,6 +306,11 @@ const Cuenta = () => {
                 ></button>
               </div>
               <div className="modal-body">
+                <div className="mb-3">
+                  <strong>Estado:</strong> {ordenSeleccionada.estado}
+                  <br />
+                  <strong>Fecha:</strong> {new Date(ordenSeleccionada.fechaCreacion).toLocaleString()}
+                </div>
                 <table className="table">
                   <thead>
                     <tr>
@@ -258,18 +321,26 @@ const Cuenta = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {ordenSeleccionada.items.map((item, index) => (
-                      <tr key={index}>
-                        <td>{item.nombre}</td>
-                        <td>S/. {item.precio}</td>
-                        <td>{item.cantidad}</td>
-                        <td>S/. {(item.precio * item.cantidad).toFixed(2)}</td>
+                    {ordenSeleccionada.productos && ordenSeleccionada.productos.length > 0 ? (
+                      ordenSeleccionada.productos.map((item, index) => (
+                        <tr key={index}>
+                          <td>{item.nombre}</td>
+                          <td>S/. {item.precio}</td>
+                          <td>{item.cantidad}</td>
+                          <td>S/. {(item.precio * item.cantidad).toFixed(2)}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="4" className="text-center text-muted">
+                          No hay productos en esta orden
+                        </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
                 <h5 className="text-end mt-3">
-                  Total: S/. {calcularTotal(ordenSeleccionada.items).toFixed(2)}
+                  Total: S/. {ordenSeleccionada.total?.toFixed(2) || calcularTotal(ordenSeleccionada.productos).toFixed(2)}
                 </h5>
               </div>
               <div className="modal-footer">

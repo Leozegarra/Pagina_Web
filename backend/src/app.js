@@ -20,6 +20,7 @@ app.put('/api/users/:id', UserController.update);
 app.delete('/api/users/:id', UserController.remove);
 app.post('/api/login', UserController.login);
 app.post('/api/recover-password', UserController.recoverPassword);
+app.put('/api/users/:id/change-password', UserController.changePassword);
 
 // Category routes
 app.get('/api/categories', CategoryController.getAll);

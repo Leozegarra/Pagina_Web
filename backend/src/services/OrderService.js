@@ -27,8 +27,8 @@ const OrderService = {
     const order = await OrderRepository.findById(id);
     return order ? new OrderEntity(order) : null;
   },
-  async getAll() {
-    const orders = await OrderRepository.findAll();
+  async getAll(usuarioId = null) {
+    const orders = await OrderRepository.findAll(usuarioId);
     return orders.map(o => new OrderEntity(o));
   },
   async update(id, data) {

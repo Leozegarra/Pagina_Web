@@ -9,37 +9,32 @@ function Login() {
   const navigate = useNavigate();
   const { setUser } = useUser();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const users = JSON.parse(localStorage.getItem("users_data")) || [];
-    const user = users.find(
-      u => u.email === inputEmail && u.password === inputPassword
-    );
-
-    // Lógica de admin
-    if (inputEmail === 'admin@example.com') {
-      if (inputPassword === '123456' && user) {
-        localStorage.setItem("loggedUser", JSON.stringify(user));
-        setUser(user);
-        setError('');
-        alert('Bienvenido administrador');
-        navigate('/admin/listOrders');
-        return;
-      } else {
-        setError('Acceso denegado: solo el administrador puede ingresar a esta sección');
+    setError('');
+    try {
+      const response = await fetch('http://localhost:3000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ correo: inputEmail, contrasena: inputPassword })
+      });
+      if (!response.ok) {
+        setError('Email o contraseña incorrectos');
         return;
       }
-    }
-
-    if (user) {
-      localStorage.setItem("loggedUser", JSON.stringify(user));
+      const user = await response.json();
+      localStorage.setItem('loggedUser', JSON.stringify(user));
       setUser(user);
       setError('');
-      alert('Iniciando sesión...');
-      navigate('/SCategorias');
-    } else {
-      setError('Email o contraseña incorrectos');
+      if (user.rol && user.rol.toLowerCase() === 'admin') {
+        alert('Bienvenido administrador');
+        navigate('/admin/listOrders');
+      } else {
+        alert('Iniciando sesión...');
+        navigate('/SCategorias');
+      }
+    } catch (err) {
+      setError('Error de conexión o credenciales inválidas');
     }
   };
 
