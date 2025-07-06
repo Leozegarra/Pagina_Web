@@ -10,9 +10,9 @@ const ProductoDetalle = () => {
 
   return (
     <div style={{ padding: 30 }}>
-      <h2>{producto.name}</h2>
-      <img src={producto.imagen} alt={producto.name} width={300} />
-      <p><strong>Precio:</strong> S/ {producto.price}</p>
+      <h2>{producto.nombre}</h2>
+      <img src={producto.imagen} alt={producto.nombre} width={300} />
+      <p><strong>Precio:</strong> S/ {producto.precio}</p>
       <p><strong>Descripción:</strong> {producto.descripcion}</p>
     </div>
   );

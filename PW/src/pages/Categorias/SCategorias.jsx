@@ -1,42 +1,37 @@
 import React, { useEffect, useState } from "react";
-import productosOriginales from "../../contexts/ProductosJSON";
 import { useCart } from "../../contexts/CartContext";
+import { useCategorias } from "../../contexts/CategoriaContexto";
+import { useProductos } from "../../contexts/ProductContext";
 import { useParams } from "react-router-dom";
-
-const obtenerProductos = () => {
-  const actualizados = JSON.parse(localStorage.getItem("productosActualizados"));
-  return actualizados || productosOriginales;
-};
-
-const obtenerCategoriasBase = (productos) => {
-  return [...new Set(productos.map((p) => p.categoria))];
-};
 
 function SCategorias() {
   const { nombreCategoria } = useParams();
-  const productos = obtenerProductos();
-  const categoriasBase = obtenerCategoriasBase(productos);
-  const [categorias, setCategorias] = useState([]);
+  const { productos, loading: loadingProductos, error: errorProductos } = useProductos();
+  const { categorias, loading, error } = useCategorias();
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
   const [modalAbierto, setModalAbierto] = useState(false);
   const [productoModal, setProductoModal] = useState(null);
   const { addToCart } = useCart();
 
   useEffect(() => {
-    const extras = JSON.parse(localStorage.getItem("categoriasExtra")) || [];
-    const todas = [...new Set([...categoriasBase, ...extras])];
-    setCategorias(todas);
-
-    const categoriaUrl = decodeURIComponent(nombreCategoria || ""); //decodeURIComponent para manejar espacios y caracteres especiales
-    if (todas.includes(categoriaUrl)) {
-      setCategoriaSeleccionada(categoriaUrl);
-    } else {
-      setCategoriaSeleccionada(todas[0]); // Si no existe, selecciona la primera categoría
+    if (categorias.length > 0) {
+      const categoriaUrl = decodeURIComponent(nombreCategoria || "");
+      const categoriaEncontrada = categorias.find(cat => (cat.nombre || cat.name || "").toLowerCase() === categoriaUrl.toLowerCase());
+      if (categoriaEncontrada) {
+        setCategoriaSeleccionada(categoriaEncontrada.nombre || categoriaEncontrada.name || "");
+      } else {
+        setCategoriaSeleccionada(categorias[0]?.nombre || categorias[0]?.name || "");
+      }
     }
-  }, [nombreCategoria]);
+  }, [nombreCategoria, categorias]);
 
+  // Buscar la categoría seleccionada por nombre
+  const categoriaObj = categorias.find(cat => (cat.nombre || cat.name) === categoriaSeleccionada);
+  const categoriaId = categoriaObj?.id;
+
+  // Filtrar productos por categoriaId
   const productosFiltrados = productos.filter(
-    (p) => p.categoria === categoriaSeleccionada
+    (p) => p.categoriaId === categoriaId
   );
 
   const abrirModal = (producto) => {
@@ -54,18 +49,41 @@ function SCategorias() {
       {/* Panel lateral */}
       <aside className="w-64 min-w-[200px] h-full bg-gradient-to-b from-teal-600 to-teal-400 shadow-xl rounded-l-3xl flex flex-col p-6 gap-6">
         <h3 className="text-white text-xl font-extrabold mb-2">Categorías</h3>
-        <ul className="flex flex-col gap-2">
-          {categorias.map((cat) => (
-            <li
-              key={cat}
-              className={`px-4 py-2 rounded-xl cursor-pointer font-semibold transition-all text-white text-base tracking-wide ${cat === categoriaSeleccionada ? 'bg-teal-100 text-teal-700 shadow-lg' : 'hover:bg-teal-300/70 hover:text-white'}`}
-              onClick={() => setCategoriaSeleccionada(cat)}
-            >
-              {cat}
-            </li>
-          ))}
-        </ul>
+        
+        {/* Estado de carga */}
+        {loading && (
+          <div className="text-center py-4">
+            <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+            <p className="mt-2 text-white text-sm">Cargando...</p>
+          </div>
+        )}
+        
+        {/* Estado de error */}
+        {error && (
+          <div className="bg-red-100 border border-red-300 rounded-lg p-3 mb-4">
+            <p className="text-red-700 text-sm">Error: {error}</p>
+          </div>
+        )}
+        
+        {/* Lista de categorías */}
+        {!loading && !error && (
+          <ul className="flex flex-col gap-2">
+            {categorias.map((cat) => {
+              const nombreCategoria = cat.nombre || cat.name || "";
+              return (
+                <li
+                  key={cat.id || cat.nombre || cat.name}
+                  className={`px-4 py-2 rounded-xl cursor-pointer font-semibold transition-all text-white text-base tracking-wide ${nombreCategoria === categoriaSeleccionada ? 'bg-teal-100 text-teal-700 shadow-lg' : 'hover:bg-teal-300/70 hover:text-white'}`}
+                  onClick={() => setCategoriaSeleccionada(nombreCategoria)}
+                >
+                  {nombreCategoria}
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </aside>
+      
       {/* Grid de productos */}
       <main className="flex-1 p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-12 justify-items-center">
         {productosFiltrados.map((producto) => (
@@ -77,15 +95,15 @@ function SCategorias() {
             <div className="w-40 h-40 flex items-center justify-center overflow-hidden rounded-xl bg-gray-50 mb-2 shadow-sm border border-gray-200">
               <img
                 src={producto.imagen}
-                alt={producto.name}
+                alt={producto.nombre}
                 className="object-contain w-32 h-32 group-hover:scale-105 transition-transform duration-300"
               />
             </div>
             <div className="w-full flex flex-col items-center gap-1">
               <div className="text-2xl font-extrabold text-gray-800 text-center truncate w-full leading-tight">
-                {producto.name}
+                {producto.nombre}
               </div>
-              <div className="text-lg font-bold text-teal-600 mb-2">S/ {producto.price}</div>
+              <div className="text-lg font-bold text-teal-600 mb-2">S/ {producto.precio}</div>
             </div>
             <button
               className="mt-2 w-full flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 rounded-full shadow transition-all text-base active:scale-95 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2"
@@ -101,6 +119,7 @@ function SCategorias() {
           <div className="col-span-full text-center text-gray-400 py-16 text-lg font-semibold">No hay productos en esta categoría.</div>
         )}
       </main>
+      
       {/* Modal de producto */}
       {modalAbierto && productoModal && (
         <div

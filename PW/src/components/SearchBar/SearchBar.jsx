@@ -7,7 +7,7 @@ const SearchBar = () => {
   const [busqueda, setBusqueda] = useState("");
 
   const resultados = productos.filter(producto =>
-    producto.name.toLowerCase().includes(busqueda.toLowerCase())
+    (typeof producto.nombre === 'string' && producto.nombre.toLowerCase().includes(busqueda.toLowerCase()))
   );
 
   return (
@@ -38,10 +38,10 @@ const SearchBar = () => {
                 >
                   <img
                     src={producto.imagen}
-                    alt={producto.name}
+                    alt={producto.nombre}
                     className="w-10 h-10 object-cover rounded-lg shadow"
                   />
-                  <span className="truncate text-gray-700">{producto.name}</span>
+                  <span className="truncate text-gray-700">{producto.nombre}</span>
                 </Link>
               </li>
             ))

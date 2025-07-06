@@ -1,22 +1,13 @@
 import React, { useEffect, useState } from "react";
-import productosOriginales from "../../contexts/ProductosJSON";
 import { useCart } from "../../contexts/CartContext";
+import { useCategorias } from "../../contexts/CategoriaContexto";
+import { useProductos } from "../../contexts/ProductContext";
 import SideBar from '../../components/SideBar/SideBar';
 import DashboardHeader from '../../components/DashboardHeader/DashBoardHeader';
 
-const obtenerProductos = () => {
-  const actualizados = JSON.parse(localStorage.getItem("productosActualizados"));
-  return actualizados || productosOriginales;
-};
-
-const obtenerCategoriasBase = (productos) => {
-  return [...new Set(productos.map((p) => p.categoria))];
-};
-
 function App() {
-  const productos = obtenerProductos();
-  const categoriasBase = obtenerCategoriasBase(productos);
-  const [categorias, setCategorias] = useState([]);
+  const { productos, loading: loadingProductos, error: errorProductos } = useProductos();
+  const { categorias, loading, error, createCategoria, removeCategoria } = useCategorias();
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
   const [modalAbierto, setModalAbierto] = useState(false);
   const [productoModal, setProductoModal] = useState(null);
@@ -26,16 +17,21 @@ function App() {
   const [nombreCategoria, setNombreCategoria] = useState("");
   const [productosSeleccionados, setProductosSeleccionados] = useState([]);
 
-  useEffect(() => {
-    const extras = JSON.parse(localStorage.getItem("categoriasExtra")) || [];
-    const todas = [...new Set([...categoriasBase, ...extras])];
-    setCategorias(todas);
-    // Si la categoría seleccionada ya no existe, selecciona la primera
-    setCategoriaSeleccionada((prev) => todas.includes(prev) ? prev : todas[0] || "");
-  }, []);
+  const IDS_ORIGINALES = [1,2,3,4,5,6,7,8,9,10];
 
+  useEffect(() => {
+    if (categorias.length > 0 && !categoriaSeleccionada) {
+      setCategoriaSeleccionada(categorias[0].nombre || categorias[0].name || "");
+    }
+  }, [categorias, categoriaSeleccionada]);
+
+  // Buscar la categoría seleccionada por nombre
+  const categoriaObj = categorias.find(cat => (cat.nombre || cat.name) === categoriaSeleccionada);
+  const categoriaId = categoriaObj?.id;
+
+  // Filtrar productos por categoriaId
   const productosFiltrados = productos.filter(
-    (p) => p.categoria === categoriaSeleccionada
+    (p) => p.categoriaId === categoriaId
   );
 
   const abrirModal = (producto) => {
@@ -58,61 +54,135 @@ function App() {
   const toggleProducto = (id) => {
     setProductosSeleccionados((prev) => prev.includes(id) ? prev.filter(pid => pid !== id) : [...prev, id]);
   };
-  const guardarCategoria = () => {
-    const limpia = nombreCategoria.trim().toLowerCase();
-    if (!limpia || categorias.includes(limpia)) {
-      alert("Nombre inválido o categoría ya existente");
+  
+  const guardarCategoria = async () => {
+    const limpia = nombreCategoria.trim();
+    if (!limpia) {
+      alert("Nombre inválido");
       return;
     }
-    const nuevasCategorias = [...categorias, limpia];
-    const soloExtras = nuevasCategorias.filter(c => !categoriasBase.includes(c));
-    localStorage.setItem("categoriasExtra", JSON.stringify(soloExtras));
-    const productosActualizados = [...productos];
-    productosSeleccionados.forEach(id => {
-      const index = productosActualizados.findIndex(p => p.id === id);
-      if (index !== -1) {
-        productosActualizados[index].categoria = limpia;
-      }
-    });
-    localStorage.setItem("productosActualizados", JSON.stringify(productosActualizados));
-    setCategorias(nuevasCategorias);
-    // Si no hay categoría seleccionada o la actual fue borrada, selecciona la nueva
-    setCategoriaSeleccionada(limpia);
-    cerrarGestionarModal();
-  };
-  const borrarCategoria = (catABorrar) => {
-    if (!window.confirm(`¿Seguro que deseas borrar la categoría "${catABorrar}"?`)) return;
-    const nuevas = categorias.filter(c => c !== catABorrar);
-    const soloExtras = nuevas.filter(c => !categoriasBase.includes(c));
-    localStorage.setItem("categoriasExtra", JSON.stringify(soloExtras));
-    setCategorias(nuevas);
-    // Limpiar la categoría de los productos que la tenían
-    const productosActualizados = productos.map(p =>
-      p.categoria === catABorrar ? { ...p, categoria: "" } : p
+    
+    // Verificar si la categoría ya existe
+    const categoriaExiste = categorias.some(cat => 
+      (cat.nombre || cat.name || "").toLowerCase() === limpia.toLowerCase()
     );
-    localStorage.setItem("productosActualizados", JSON.stringify(productosActualizados));
-    // Si la categoría seleccionada fue borrada, selecciona la primera disponible
-    if (categoriaSeleccionada === catABorrar) {
-      setCategoriaSeleccionada(nuevas[0] || "");
+    
+    if (categoriaExiste) {
+      alert("Categoría ya existente");
+      return;
+    }
+
+    try {
+      // Crear categoría en el backend
+      const nuevaCategoria = await createCategoria({
+        nombre: limpia,
+        descripcion: `Categoría ${limpia}`
+      });
+
+      // Actualizar productos seleccionados
+      const productosActualizados = [...productos];
+      productosSeleccionados.forEach(id => {
+        const index = productosActualizados.findIndex(p => p.id === id);
+        if (index !== -1) {
+          productosActualizados[index].categoria = limpia;
+        }
+      });
+      localStorage.setItem("productosActualizados", JSON.stringify(productosActualizados));
+      
+      // Seleccionar la nueva categoría
+      setCategoriaSeleccionada(limpia);
+      cerrarGestionarModal();
+    } catch (error) {
+      console.error('Error al crear categoría:', error);
+      alert("Error al crear la categoría. Inténtalo de nuevo.");
+    }
+  };
+  
+  const borrarCategoria = async (catABorrar) => {
+    if (!window.confirm(`¿Seguro que deseas borrar la categoría "${catABorrar}"?`)) return;
+    
+    try {
+      // Encontrar la categoría en el array para obtener su ID
+      const categoria = categorias.find(cat => 
+        (cat.nombre || cat.name || "") === catABorrar
+      );
+      
+      if (categoria && categoria.id) {
+        await removeCategoria(categoria.id);
+      }
+      
+      // Limpiar la categoría de los productos que la tenían
+      const productosActualizados = productos.map(p =>
+        p.categoria === catABorrar ? { ...p, categoria: "" } : p
+      );
+      localStorage.setItem("productosActualizados", JSON.stringify(productosActualizados));
+      
+      // Si la categoría seleccionada fue borrada, selecciona la primera disponible
+      if (categoriaSeleccionada === catABorrar) {
+        const nuevasCategorias = categorias.filter(cat => 
+          (cat.nombre || cat.name || "") !== catABorrar
+        );
+        setCategoriaSeleccionada(nuevasCategorias[0]?.nombre || nuevasCategorias[0]?.name || "");
+      }
+    } catch (error) {
+      console.error('Error al borrar categoría:', error);
+      alert("Error al borrar la categoría. Inténtalo de nuevo.");
+    }
+  };
+
+  const resetearCategoriasPersonalizadas = async () => {
+    if (!window.confirm("¿Seguro que deseas eliminar todas las categorías personalizadas?")) return;
+    try {
+      for (const categoria of categorias) {
+        if (!IDS_ORIGINALES.includes(categoria.id)) {
+          await removeCategoria(categoria.id);
+        }
+      }
+      setTimeout(() => window.location.reload(), 500);
+    } catch (error) {
+      alert("Error al resetear categorías personalizadas");
     }
   };
 
   return (
     <div className="min-h-screen flex bg-gray-50">
-      <SideBar onGestionarCategorias={abrirGestionarModal} />
+      <SideBar onGestionarCategorias={abrirGestionarModal} onResetCategorias={resetearCategoriasPersonalizadas} />
       <main className="flex-1 w-full max-w-7xl mx-auto px-8 py-10">
         <DashboardHeader title="Categorías" onGestionarCategorias={abrirGestionarModal} />
-        <ul className="flex flex-wrap gap-2 mb-8">
-          {categorias.map((cat) => (
-            <li
-              key={cat}
-              className={`px-4 py-2 rounded-full cursor-pointer font-medium text-sm transition-all border ${cat === categoriaSeleccionada ? 'bg-teal-50 text-teal-700 border-teal-200 shadow' : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'}`}
-              onClick={() => setCategoriaSeleccionada(cat)}
-            >
-              {cat}
-            </li>
-          ))}
-        </ul>
+        
+        {/* Estado de carga */}
+        {loading && (
+          <div className="text-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+            <p className="mt-2 text-gray-600">Cargando categorías...</p>
+          </div>
+        )}
+        
+        {/* Estado de error */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <p className="text-red-700">Error al cargar categorías: {error}</p>
+          </div>
+        )}
+        
+        {/* Lista de categorías */}
+        {!loading && !error && (
+          <ul className="flex flex-wrap gap-2 mb-8">
+            {categorias.map((cat) => {
+              const nombreCategoria = cat.nombre || cat.name || "";
+              return (
+                <li
+                  key={cat.id || cat.nombre || cat.name}
+                  className={`px-4 py-2 rounded-full cursor-pointer font-medium text-sm transition-all border ${nombreCategoria === categoriaSeleccionada ? 'bg-teal-50 text-teal-700 border-teal-200 shadow' : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'}`}
+                  onClick={() => setCategoriaSeleccionada(nombreCategoria)}
+                >
+                  {nombreCategoria}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
           {productosFiltrados.map((producto) => (
             <div
@@ -123,11 +193,11 @@ function App() {
               <div className="w-24 h-24 flex items-center justify-center overflow-hidden rounded-lg bg-gray-50 mb-2 shadow-sm border border-gray-100">
                 <img
                   src={producto.imagen}
-                  alt={producto.name}
+                  alt={producto.nombre}
                   className="object-contain w-16 h-16 group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              <div className="text-sm font-semibold text-gray-800 text-center truncate w-full">{producto.name}</div>
+              <div className="text-sm font-semibold text-gray-800 text-center truncate w-full">{producto.nombre}</div>
             </div>
           ))}
           {productosFiltrados.length === 0 && (
@@ -148,10 +218,10 @@ function App() {
             <h2 className="text-xl font-bold text-teal-700 mb-4">{productoModal.name}</h2>
             <img
               src={productoModal.imagen}
-              alt={productoModal.name}
+              alt={productoModal.nombre}
               className="w-40 h-40 object-contain rounded-lg mb-4 shadow"
             />
-            <p className="font-bold text-lg text-teal-600 mb-6">Precio: S/ {productoModal.price}</p>
+            <p className="font-bold text-lg text-teal-600 mb-6">Precio: S/ {productoModal.precio}</p>
             <button
               onClick={() => {
                 addToCart(productoModal);
@@ -197,45 +267,25 @@ function App() {
                     className={`relative flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer shadow-sm bg-gray-50 hover:bg-teal-50 duration-200 ${seleccionado ? 'border-teal-500 bg-teal-50 ring-2 ring-teal-200 scale-[1.03]' : 'border-gray-200'}`}
                     onClick={() => toggleProducto(producto.id)}
                   >
-                    <img src={producto.imagen} className="w-10 h-10 rounded-lg object-contain bg-white border border-gray-100" alt={producto.name} />
+                    <img src={producto.imagen} className="w-10 h-10 rounded-lg object-contain bg-white border border-gray-100" alt={producto.nombre} />
                     <div className="flex flex-col">
-                      <span className="font-semibold text-gray-800 text-sm">{producto.name}</span>
+                      <span className="font-semibold text-gray-800 text-sm">{producto.nombre}</span>
                       <span className="text-xs text-gray-400">{producto.categoria}</span>
                     </div>
                     {seleccionado && (
-                      <span className="absolute top-2 right-2 bg-teal-500 text-white rounded-full p-1 shadow animate-bounce-in">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                      </span>
+                      <div className="absolute top-2 right-2 w-5 h-5 bg-teal-500 rounded-full flex items-center justify-center">
+                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
                     )}
                   </div>
                 );
               })}
             </div>
-            <ul className="divide-y divide-gray-100 rounded-xl overflow-hidden bg-white border border-gray-100 mb-4">
-              {categorias.map((cat, idx) => {
-                const esCategoriaBase = categoriasBase.includes(cat);
-                return (
-                  <li key={idx} className="flex items-center justify-between px-5 py-3 hover:bg-gray-50 transition-all text-sm">
-                    <span className="font-medium text-gray-700">{cat}</span>
-                    {!esCategoriaBase && (
-                      <button className="bg-red-50 hover:bg-red-100 text-red-500 font-bold px-4 py-1 rounded-full text-xs shadow-sm transition-all border border-red-100" onClick={() => borrarCategoria(cat)}>
-                        Borrar
-                      </button>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
             <div className="flex flex-col md:flex-row gap-2 justify-end mt-6">
               <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-2 rounded-full shadow-sm text-sm transition-all border border-gray-200" onClick={cerrarGestionarModal}>Cancelar</button>
-              <button
-                className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-5 py-2 rounded-full shadow-sm text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={guardarCategoria}
-                disabled={!nombreCategoria.trim() || categorias.includes(nombreCategoria.trim().toLowerCase())}
-              >
-                Guardar categoría
-              </button>
-              <button className="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 font-semibold px-4 py-2 rounded-full shadow-sm text-sm transition-all border border-yellow-200" onClick={() => { localStorage.removeItem("productosActualizados"); localStorage.removeItem("categoriasExtra"); window.location.reload(); }}>Limpiar cambios (reset)</button>
+              <button className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-5 py-2 rounded-full shadow-sm text-sm transition-all" onClick={guardarCategoria}>Guardar categoría</button>
             </div>
           </div>
         </div>

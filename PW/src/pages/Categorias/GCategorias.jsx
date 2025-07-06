@@ -1,27 +1,17 @@
 import React, { useState, useEffect } from "react";
-import productos from "../../contexts/ProductosJSON";
 import { useNavigate } from "react-router-dom";
+import { useCategorias } from "../../contexts/CategoriaContexto";
+import { useProductos } from "../../contexts/ProductContext";
 
 const GestorCategorias = () => {
   const navigate = useNavigate();
-
-  // Categorías originales extraídas de los productos del JSON
-  const categoriasBase = [...new Set(productos.map(p => p.categoria))];
-
-  // Estado que mantiene todas las categorías visibles (base + extra)
-  const [categorias, setCategorias] = useState(categoriasBase);
+  const { categorias, loading, error, createCategoria, removeCategoria } = useCategorias();
+  const { productos, loading: loadingProductos, error: errorProductos } = useProductos();
 
   // Modal y selección
   const [mostrarModal, setMostrarModal] = useState(false);
   const [nombreCategoria, setNombreCategoria] = useState("");
   const [productosSeleccionados, setProductosSeleccionados] = useState([]);
-
-  // Al montar el componente, cargamos las categorías extras guardadas
-  useEffect(() => {
-    const guardadas = JSON.parse(localStorage.getItem("categoriasExtra")) || [];
-    const nuevas = [...new Set([...categoriasBase, ...guardadas])];
-    setCategorias(nuevas);
-  }, []);
 
   // Abre el modal para agregar categoría
   const abrirModal = () => {
@@ -42,52 +32,88 @@ const GestorCategorias = () => {
   };
 
   // Guarda la nueva categoría y asigna productos
-  const guardarCategoria = () => {
-    const limpia = nombreCategoria.trim().toLowerCase();
+  const guardarCategoria = async () => {
+    const limpia = nombreCategoria.trim();
 
-    if (!limpia || categorias.includes(limpia)) {
-      alert("Nombre inválido o categoría ya existente");
+    if (!limpia) {
+      alert("Nombre inválido");
       return;
     }
 
-    const nuevasCategorias = [...categorias, limpia];
-    const soloExtras = nuevasCategorias.filter(c => !categoriasBase.includes(c));
-    localStorage.setItem("categoriasExtra", JSON.stringify(soloExtras));
-    //clona los productos actuales
-    const productosActualizados = [...productos]; 
+    // Verificar si la categoría ya existe
+    const categoriaExiste = categorias.some(cat => 
+      (cat.nombre || cat.name || "").toLowerCase() === limpia.toLowerCase()
+    );
+    
+    if (categoriaExiste) {
+      alert("Categoría ya existente");
+      return;
+    }
 
-    // Asignamos la nueva categoría a los productos seleccionados
-    productosSeleccionados.forEach(id => {
-      const index = productosActualizados.findIndex(p => p.id === id);
-      if (index !== -1) {
-        productosActualizados[index].categoria = limpia;
-      }
-    });
+    try {
+      // Crear categoría en el backend
+      await createCategoria({
+        nombre: limpia,
+        descripcion: `Categoría ${limpia}`
+      });
 
-    //guarda en localStorage
-    localStorage.setItem("productosActualizados", JSON.stringify(productosActualizados));
-    setCategorias(nuevasCategorias);
-    cerrarModal();
+      //clona los productos actuales
+      const productosActualizados = [...productos]; 
+
+      // Asignamos la nueva categoría a los productos seleccionados
+      productosSeleccionados.forEach(id => {
+        const index = productosActualizados.findIndex(p => p.id === id);
+        if (index !== -1) {
+          productosActualizados[index].categoria = limpia;
+        }
+      });
+
+      //guarda en localStorage
+      localStorage.setItem("productosActualizados", JSON.stringify(productosActualizados));
+      cerrarModal();
+    } catch (error) {
+      console.error('Error al crear categoría:', error);
+      alert("Error al crear la categoría. Inténtalo de nuevo.");
+    }
   };
 
-  // Borra una categoría extra (no se puede borrar una base)
-  const borrarCategoria = (catABorrar) => {
+  const IDS_ORIGINALES = [1,2,3,4,5,6,7,8,9,10];
+
+  const borrarCategoria = async (catABorrar) => {
     if (!window.confirm(`¿Seguro que deseas borrar la categoría "${catABorrar}"?`)) return;
-
-    const nuevas = categorias.filter(c => c !== catABorrar);
-    const soloExtras = nuevas.filter(c => !categoriasBase.includes(c));
-
-    localStorage.setItem("categoriasExtra", JSON.stringify(soloExtras));
-    setCategorias(nuevas);
-
-    //limpiar la categoría de los productos que la tenían
-    productos.forEach(p => {
-      if (p.categoria === catABorrar) {
-        p.categoria = ""; //usar "Sin categoría"
+    try {
+      const categoria = categorias.find(cat => (cat.nombre || cat.name || "") === catABorrar);
+      if (categoria && categoria.id && !IDS_ORIGINALES.includes(categoria.id)) {
+        await removeCategoria(categoria.id);
+        // Limpiar la categoría de los productos que la tenían en localStorage
+        const productosActualizados = JSON.parse(localStorage.getItem("productosActualizados")) || [];
+        const nuevosProductos = productosActualizados.map(p =>
+          p.categoria === catABorrar ? { ...p, categoria: "" } : p
+        );
+        localStorage.setItem("productosActualizados", JSON.stringify(nuevosProductos));
       }
-    });
+      // Recargar para reflejar cambios
+      setTimeout(() => window.location.reload(), 500);
+    } catch (error) {
+      alert("Error al borrar la categoría personalizada");
+    }
+  };
 
-    localStorage.setItem("productosActualizados", JSON.stringify(productos));
+  const resetearCategoriasPersonalizadas = async () => {
+    if (!window.confirm("¿Seguro que deseas eliminar todas las categorías personalizadas?")) return;
+    try {
+      for (const categoria of categorias) {
+        if (!IDS_ORIGINALES.includes(categoria.id)) {
+          await removeCategoria(categoria.id);
+        }
+      }
+      // Limpiar localStorage
+      localStorage.removeItem("productosActualizados");
+      localStorage.removeItem("categoriasExtra");
+      setTimeout(() => window.location.reload(), 500);
+    } catch (error) {
+      alert("Error al resetear categorías personalizadas");
+    }
   };
 
   return (
@@ -105,24 +131,60 @@ const GestorCategorias = () => {
             <button className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-5 py-2 rounded-full shadow-sm text-sm transition-all" onClick={abrirModal}>
               + Agregar categoría
             </button>
+            <button className="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 font-semibold px-4 py-2 rounded-full shadow-sm text-sm transition-all border border-yellow-200" onClick={resetearCategoriasPersonalizadas}>
+              Resetear categorías personalizadas
+            </button>
           </div>
         </div>
-        <ul className="divide-y divide-gray-100 rounded-xl overflow-hidden bg-white border border-gray-100">
-          {categorias.map((cat, idx) => {
-            const esCategoriaBase = categoriasBase.includes(cat);
-            return (
-              <li key={idx} className="flex items-center justify-between px-5 py-3 hover:bg-gray-50 transition-all text-sm">
-                <span className="font-medium text-gray-700">{cat}</span>
-                {!esCategoriaBase && (
-                  <button className="bg-red-50 hover:bg-red-100 text-red-500 font-bold px-4 py-1 rounded-full text-xs shadow-sm transition-all border border-red-100" onClick={() => borrarCategoria(cat)}>
-                    Borrar
-                  </button>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+        
+        {/* Estado de carga */}
+        {loading && (
+          <div className="text-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+            <p className="mt-2 text-gray-600">Cargando categorías...</p>
+          </div>
+        )}
+        
+        {/* Estado de error */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <p className="text-red-700">Error al cargar categorías: {error}</p>
+          </div>
+        )}
+        
+        {/* Lista de categorías */}
+        {!loading && !error && (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-bold text-gray-600 uppercase">ID</th>
+                  <th className="px-4 py-2 text-left text-xs font-bold text-gray-600 uppercase">Nombre</th>
+                  <th className="px-4 py-2 text-left text-xs font-bold text-gray-600 uppercase">Descripción</th>
+                  <th className="px-4 py-2 text-center text-xs font-bold text-gray-600 uppercase">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-100">
+                {categorias.map((cat) => (
+                  <tr key={cat.id}>
+                    <td className="px-4 py-2 text-sm text-gray-700">{cat.id}</td>
+                    <td className="px-4 py-2 text-sm font-semibold text-gray-800">{cat.nombre}</td>
+                    <td className="px-4 py-2 text-sm text-gray-600">{cat.descripcion}</td>
+                    <td className="px-4 py-2 text-center">
+                      {!IDS_ORIGINALES.includes(cat.id) && (
+                        <button className="bg-red-50 hover:bg-red-100 text-red-500 font-bold px-4 py-1 rounded-full text-xs shadow-sm transition-all border border-red-100" onClick={() => borrarCategoria(cat.nombre)}>
+                          Borrar
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
+      
       {/* Modal para agregar nueva categoría */}
       {mostrarModal && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
@@ -151,9 +213,9 @@ const GestorCategorias = () => {
                   className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer shadow-sm bg-gray-50 hover:bg-teal-50 ${productosSeleccionados.includes(producto.id) ? 'border-teal-400 ring-2 ring-teal-100' : 'border-gray-200'}`}
                   onClick={() => toggleProducto(producto.id)}
                 >
-                  <img src={producto.imagen} className="w-10 h-10 rounded-lg object-contain bg-white border border-gray-100" alt={producto.name} />
+                  <img src={producto.imagen} className="w-10 h-10 rounded-lg object-contain bg-white border border-gray-100" alt={producto.nombre} />
                   <div className="flex flex-col">
-                    <span className="font-semibold text-gray-800 text-sm">{producto.name}</span>
+                    <span className="font-semibold text-gray-800 text-sm">{producto.nombre}</span>
                     <span className="text-xs text-gray-400">{producto.categoria}</span>
                   </div>
                 </div>
@@ -162,7 +224,9 @@ const GestorCategorias = () => {
             <div className="flex flex-col md:flex-row gap-2 justify-end mt-6">
               <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-2 rounded-full shadow-sm text-sm transition-all border border-gray-200" onClick={cerrarModal}>Cancelar</button>
               <button className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-5 py-2 rounded-full shadow-sm text-sm transition-all" onClick={guardarCategoria}>Guardar categoría</button>
-              <button className="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 font-semibold px-4 py-2 rounded-full shadow-sm text-sm transition-all border border-yellow-200" onClick={() => { localStorage.removeItem("productosActualizados"); localStorage.removeItem("categoriasExtra"); window.location.reload(); }}>Limpiar cambios (reset)</button>
+              <button className="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 font-semibold px-4 py-2 rounded-full shadow-sm text-sm transition-all border border-yellow-200" onClick={resetearCategoriasPersonalizadas}>
+                Resetear categorías personalizadas
+              </button>
             </div>
           </div>
         </div>
