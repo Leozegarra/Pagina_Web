@@ -4,15 +4,15 @@ const bcrypt = require('bcrypt');
 
 const UserService = {
   async register(userData) {
-    // Hash de password antes de guardar
-    if (userData.password) {
-      userData.password = await bcrypt.hash(userData.password, 10);
+    // Hash de contrasena antes de guardar
+    if (userData.contrasena) {
+      userData.contrasena = await bcrypt.hash(userData.contrasena, 10);
     }
     const user = await UserRepository.create(userData);
     return new UserEntity(user);
   },
-  async getByEmail(email) {
-    const user = await UserRepository.findByEmail(email);
+  async getByCorreo(correo) {
+    const user = await UserRepository.findByCorreo(correo);
     return user ? new UserEntity(user) : null;
   },
   async getById(id) {
@@ -24,8 +24,8 @@ const UserService = {
     return users.map(u => new UserEntity(u));
   },
   async update(id, data) {
-    if (data.password) {
-      data.password = await bcrypt.hash(data.password, 10);
+    if (data.contrasena) {
+      data.contrasena = await bcrypt.hash(data.contrasena, 10);
     }
     const updated = await UserRepository.update(id, data);
     return updated ? new UserEntity(updated) : null;
@@ -33,21 +33,18 @@ const UserService = {
   async remove(id) {
     return await UserRepository.remove(id);
   },
-  async login(email, password) {
-    console.log("service");
-    const user = await UserRepository.findByEmail(email);
-    console.log(password,user.password);
+  async login(correo, contrasena) {
+    const user = await UserRepository.findByCorreo(correo);
     if (!user) return null;
-    const match = await bcrypt.compare(password, user.password);
-    console.log(match);
+    const match = await bcrypt.compare(contrasena, user.contrasena);
     if (!match) return null;
     return new UserEntity(user);
   },
-  async recoverPassword(email, newPassword) {
-    const user = await UserRepository.findByEmail(email);
+  async recoverPassword(correo, newPassword) {
+    const user = await UserRepository.findByCorreo(correo);
     if (!user) return null;
     const hashed = await bcrypt.hash(newPassword, 10);
-    await UserRepository.update(user.id, { password: hashed });
+    await UserRepository.update(user.id, { contrasena: hashed });
     return true;
   }
 };

@@ -1,11 +1,11 @@
 class Order {
-  constructor({ id, userId, productos, precio, fecha, status, createdAt, updatedAt }) {
+  constructor({ id, usuarioId, productos, precio, fecha, estado, createdAt, updatedAt }) {
     this.id = id;
-    this.userId = userId;
-    this.productos = productos; 
+    this.usuarioId = usuarioId;
+    this.productos = productos;
     this.precio = precio;
     this.fecha = fecha;
-    this.status = status;
+    this.estado = estado;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }

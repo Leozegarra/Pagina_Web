@@ -1,27 +1,26 @@
-const db = require('../db/models /')
-const Order = db.Order;
+const { Orden } = require('../db/models');
 
 const OrderRepository = {
   async create(data) {
-    return await Order.create(data);
+    return await Orden.create(data);
   },
   async findById(id) {
-    return await Order.findByPk(id);
+    return await Orden.findByPk(id);
   },
   async findAll() {
-    return await Order.findAll();
+    return await Orden.findAll();
   },
-  async findByUser(userId) {
-    return await Order.findAll({ where: { userId } });
+  async findByUsuario(usuarioId) {
+    return await Orden.findAll({ where: { usuarioId } });
   },
   async update(id, data) {
-    const order = await Order.findByPk(id);
+    const order = await Orden.findByPk(id);
     if (!order) return null;
     await order.update(data);
     return order;
   },
   async remove(id) {
-    const order = await Order.findByPk(id);
+    const order = await Orden.findByPk(id);
     if (!order) return null;
     await order.destroy();
     return true;

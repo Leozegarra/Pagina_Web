@@ -57,9 +57,8 @@ const UserController = {
   // Login
   async login(req, res) {
     try {
-      const { email, password } = req.body;
-      console.log(email, password);
-      const user = await UserService.login(email, password);
+      const { correo, contrasena } = req.body;
+      const user = await UserService.login(correo, contrasena);
       if (!user) return res.status(401).json({ error: 'Credenciales inválidas' });
       res.json(user);
     } catch (error) {
@@ -70,8 +69,8 @@ const UserController = {
   // Recuperar contraseña
   async recoverPassword(req, res) {
     try {
-      const { email, newPassword } = req.body;
-      const ok = await UserService.recoverPassword(email, newPassword);
+      const { correo, newPassword } = req.body;
+      const ok = await UserService.recoverPassword(correo, newPassword);
       if (!ok) return res.status(404).json({ error: 'Usuario no encontrado' });
       res.json({ message: 'Contraseña actualizada' });
     } catch (error) {
