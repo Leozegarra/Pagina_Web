@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { getUsers } from '../../services/userService';
+
 
 function Recover() {
   const [inputEmail, setEmail] = useState('');
@@ -13,6 +15,7 @@ function Recover() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
 
     const users = getUsers();
     const user = users.find(
@@ -34,6 +37,7 @@ function Recover() {
     }
     else {
       setError('No se pudo verificar la cuenta');
+
     }
   };
 
