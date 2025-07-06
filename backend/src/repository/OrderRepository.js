@@ -9,8 +9,10 @@ const OrderRepository = {
       include: [{ model: Usuario, as: 'usuario', attributes: ['id', 'nombre', 'correo'] }]
     });
   },
-  async findAll() {
+  async findAll(usuarioId = null) {
+    const whereClause = usuarioId ? { usuarioId } : {};
     return await Orden.findAll({
+      where: whereClause,
       include: [{ model: Usuario, as: 'usuario', attributes: ['id', 'nombre', 'correo'] }]
     });
   },

@@ -76,6 +76,23 @@ const UserController = {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
+  },
+
+  // Cambiar contraseña
+  async changePassword(req, res) {
+    try {
+      const { oldPassword, newPassword } = req.body;
+      const userId = req.params.id;
+      
+      const success = await UserService.changePassword(userId, oldPassword, newPassword);
+      if (!success) {
+        return res.status(400).json({ message: 'Contraseña actual incorrecta' });
+      }
+      
+      res.json({ message: 'Contraseña actualizada correctamente' });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   }
 };
 

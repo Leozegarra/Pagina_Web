@@ -36,8 +36,16 @@ const UserService = {
   async login(correo, contrasena) {
     const user = await UserRepository.findByCorreo(correo);
     if (!user) return null;
-    const match = await bcrypt.compare(contrasena, user.contrasena);
-    if (!match) return null;
+
+    // Si la contraseña en la BD parece un hash bcrypt, usa bcrypt.compare
+    if (user.contrasena && user.contrasena.startsWith('$2b$')) {
+      const match = await bcrypt.compare(contrasena, user.contrasena);
+      if (!match) return null;
+    } else {
+      // Si está en texto plano, compara directamente
+      if (contrasena !== user.contrasena) return null;
+    }
+
     return new UserEntity(user);
   },
   async recoverPassword(correo, newPassword) {
@@ -45,6 +53,26 @@ const UserService = {
     if (!user) return null;
     const hashed = await bcrypt.hash(newPassword, 10);
     await UserRepository.update(user.id, { contrasena: hashed });
+    return true;
+  },
+
+  async changePassword(userId, oldPassword, newPassword) {
+    const user = await UserRepository.findById(userId);
+    if (!user) return false;
+
+    // Verificar contraseña actual
+    let isValidPassword = false;
+    if (user.contrasena && user.contrasena.startsWith('$2b$')) {
+      isValidPassword = await bcrypt.compare(oldPassword, user.contrasena);
+    } else {
+      isValidPassword = oldPassword === user.contrasena;
+    }
+
+    if (!isValidPassword) return false;
+
+    // Hash y actualizar nueva contraseña
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await UserRepository.update(userId, { contrasena: hashed });
     return true;
   }
 };

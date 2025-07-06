@@ -20,7 +20,8 @@ const OrderController = {
   },
   async getAll(req, res) {
     try {
-      const orders = await OrderService.getAll();
+      const { usuarioId } = req.query;
+      const orders = await OrderService.getAll(usuarioId);
       res.json(orders);
     } catch (error) {
       res.status(500).json({ error: 'Error al obtener las órdenes', details: error.message });
