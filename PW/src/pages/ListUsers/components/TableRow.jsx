@@ -10,18 +10,39 @@ export default function TableRow({ user, index, setUsers }) {
     navigate(`/admin/detailUser/${user.id}`);
   };
 
-  const handleUser = (e) => {
+  const handleUser = async (e) => {
     e.stopPropagation();
 
-    setUsers(prevUsers => {
-      const updatedUsers = prevUsers.map((u) => {
-        if (u.id === user.id) {
-          return { ...u, status: u.status === "Activo" ? "Inactivo" : "Activo" };
-        }
-        return u;
+    try {
+      const newStatus = user.status === "Activo" ? "Inactivo" : "Activo";
+      
+      console.log(user.status == "Activo" ? false : true);
+      const response = await fetch(`http://localhost:3000/api/users/${user.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ estado: user.status == "Activo" ? false : true }),
       });
-      return updatedUsers;
-    });
+      console.log(response);
+      if (!response.ok) {
+        throw new Error('Error al actualizar el estado del usuario');
+      }
+
+  
+      setUsers(prevUsers => {
+        const updatedUsers = prevUsers.map((u) => {
+          if (u.id === user.id) {
+            return { ...u, status: newStatus };
+          }
+          return u;
+        });
+        return updatedUsers;
+      });
+    } catch (error) {
+      console.error('Error updating user status:', error);
+
+    }
   };
 
   return (

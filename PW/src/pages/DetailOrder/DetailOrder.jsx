@@ -7,34 +7,69 @@ const DetailOrder = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
+  const [user, setUser] = useState(null);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCancelModal, setShowCancelModal] = useState(false);
 
   useEffect(() => {
-    try {
-      const orders = JSON.parse(localStorage.getItem('orders_data'));
-      const currentOrder = orders.find(o => o.id === parseInt(id));
-      
-      if (!currentOrder) {
+    const fetchOrderData = async () => {
+      try {
+    
+        const orderResponse = await fetch(`http://localhost:3000/api/orders/${id}`);
+        if (!orderResponse.ok) {
+          throw new Error('Orden no encontrada');
+        }
+        const orderData = await orderResponse.json();
+        setOrder(orderData);
+
+        // Obtener información del usuario
+        const userResponse = await fetch(`http://localhost:3000/api/users/${orderData.userId}`);
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setUser(userData);
+        }
+
+
+        const productsResponse = await fetch('http://localhost:3000/api/products');
+        if (productsResponse.ok) {
+          const allProducts = await productsResponse.json();
+          const orderProducts = orderData.productos.map(item => {
+            const product = allProducts.find(p => p.id === item.product_id);
+            return {
+              ...item,
+              product: product || { name: 'Producto no encontrado', price: 0 }
+            };
+          });
+          setProducts(orderProducts);
+        }
+      } catch (error) {
+        console.error('Error al cargar los datos:', error);
         navigate('/admin/listOrders');
-        return;
+      } finally {
+        setLoading(false);
       }
-      setOrder(currentOrder);
-    } catch (error) {
-      console.error('Error al cargar los datos:', error);
-    } finally {
-      setLoading(false);
-    }
+    };
+
+    fetchOrderData();
   }, [id, navigate]);
 
-  const handleCancelOrder = () => {
+  const handleCancelOrder = async () => {
     try {
-      const orders = JSON.parse(localStorage.getItem('orders_data'));
-      const updatedOrders = orders.map(o => 
-        o.id === parseInt(id) ? { ...o, estado: 'Cancelado' } : o
-      );
-      localStorage.setItem('orders_data', JSON.stringify(updatedOrders));
-      setOrder({ ...order, estado: 'Cancelado' });
+      const response = await fetch(`http://localhost:3000/api/orders/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: 'cancelado' }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al cancelar la orden');
+      }
+
+      const updatedOrder = await response.json();
+      setOrder(updatedOrder);
       setShowCancelModal(false);
     } catch (error) {
       console.error('Error al cancelar la orden:', error);
@@ -54,13 +89,31 @@ const DetailOrder = () => {
     );
   }
 
+  if (!order) {
+    return (
+      <div className="flex min-h-screen bg-gray-50">
+        <SideBar />
+        <div className="flex-1 p-6">
+          <DashboardHeader title="Detalle de Orden" />
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-600">Orden no encontrada</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const totalAmount = products.reduce((total, item) => {
+    return total + (item.product.price * item.cantidad);
+  }, 0);
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <SideBar />
       <div className="flex-1 p-6">
         <DashboardHeader title="Detalle de Orden" />
         
-        <div className="mt-12 max-w-4xl mx-auto">
+        <div className="mt-12 max-w-6xl mx-auto">
           <div className="bg-white rounded-lg shadow">
        
             <div className="p-6 border-b border-gray-200">
@@ -70,20 +123,20 @@ const DetailOrder = () => {
                     Orden #{order.id}
                   </h2>
                   <p className="text-gray-600 mt-1">
-                    Fecha: {order.fecha}
+                    Fecha: {new Date(order.fecha || order.createdAt).toLocaleDateString()}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className={`px-4 py-2 rounded-full text-sm font-medium ${
-                    order.estado === 'Entregado' 
+                    order.status === 'completado' 
                       ? 'bg-green-100 text-green-800'
-                      : order.estado === 'Cancelado'
+                      : order.status === 'cancelado'
                       ? 'bg-red-100 text-red-800'
                       : 'bg-yellow-100 text-yellow-800'
                   }`}>
-                    {order.estado}
+                    {order.status}
                   </span>
-                  {order.estado !== 'Cancelado' && order.estado !== 'Entregado' && (
+                  {order.status !== 'cancelado' && order.status !== 'completado' && (
                     <button
                       onClick={() => setShowCancelModal(true)}
                       className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
@@ -106,36 +159,71 @@ const DetailOrder = () => {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center p-3 bg-white rounded-lg">
                       <span className="text-gray-600">Nombre</span>
-                      <span className="font-medium text-gray-800">{order.cliente}</span>
+                      <span className="font-medium text-gray-800">{user ? user.name : 'N/A'}</span>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-white rounded-lg">
                       <span className="text-gray-600">Email</span>
-                      <span className="font-medium text-gray-800">{order.email}</span>
+                      <span className="font-medium text-gray-800">{user ? user.email : 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-white rounded-lg">
+                      <span className="text-gray-600">ID Usuario</span>
+                      <span className="font-medium text-gray-800">{order.userId}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-6">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                    Detalles del Producto
+                    Resumen de la Orden
                   </h3>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center p-3 bg-white rounded-lg">
-                      <span className="text-gray-600">Producto</span>
-                      <span className="font-medium text-gray-800">{order.producto}</span>
+                      <span className="text-gray-600">Total Productos</span>
+                      <span className="font-medium text-gray-800">{products.length}</span>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-white rounded-lg">
-                      <span className="text-gray-600">Cantidad</span>
-                      <span className="font-medium text-gray-800">{order.cantidad}</span>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-white rounded-lg">
-                      <span className="text-gray-600">Precio Unitario</span>
-                      <span className="font-medium text-gray-800">${order.precio}</span>
+                      <span className="text-gray-600">Cantidad Total</span>
+                      <span className="font-medium text-gray-800">
+                        {products.reduce((total, item) => total + item.cantidad, 0)}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
                       <span className="text-blue-600 font-medium">Total</span>
-                      <span className="text-blue-600 font-bold text-lg">${order.precio * order.cantidad}</span>
+                      <span className="text-blue-600 font-bold text-lg">S/. {totalAmount}</span>
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Products List */}
+              <div className="mt-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Productos de la Orden
+                </h3>
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <div className="space-y-4">
+                    {products.map((item, index) => (
+                      <div key={index} className="flex justify-between items-center p-4 bg-white rounded-lg">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-800">{item.product.name}</h4>
+                          <p className="text-sm text-gray-600">ID: {item.product_id}</p>
+                        </div>
+                        <div className="flex items-center gap-6">
+                          <div className="text-center">
+                            <span className="text-sm text-gray-600">Cantidad</span>
+                            <p className="font-medium text-gray-800">{item.cantidad}</p>
+                          </div>
+                          <div className="text-center">
+                            <span className="text-sm text-gray-600">Precio Unit.</span>
+                            <p className="font-medium text-gray-800">S/. {item.product.price}</p>
+                          </div>
+                          <div className="text-center">
+                            <span className="text-sm text-gray-600">Subtotal</span>
+                            <p className="font-bold text-gray-800">S/. {item.product.price * item.cantidad}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
